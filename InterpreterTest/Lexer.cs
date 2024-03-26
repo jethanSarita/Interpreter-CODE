@@ -32,12 +32,17 @@ namespace InterpreterTest
                     _position++;
                     continue;
                 }
-
-                if (char.IsLetter(currentChar) || currentChar == '_')
+                //check current char if it's a letter
+                if (IsLetterOr_(currentChar))
                 {
-                    string identifier = ReadWhile(c => char.IsLetterOrDigit(c) || c == '_');
+                    //continue to read the rest of it and store in
+                    //identifier. Stop until space or non letter/digit/_
+                    //sample: x, INT, variable_name, num1
+                    string identifier = ReadWhile(IsLetterOrDigitOr_);
+                    //Check if its reserved word
                     if (Keywords.Contains(identifier))
                     {
+
                         tokens.Add(new Token(Token.TokenType.Identifier, identifier));
                     }
                     else
@@ -89,6 +94,16 @@ namespace InterpreterTest
             return separators.Contains(c);
         }
 
+        private bool IsLetterOr_(char c)
+        {
+            return char.IsLetter(c) || c == '_';
+        }
+
+        private bool IsLetterOrDigitOr_(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '_';
+        }
+
         private Token ReadStringLiteral()
         {
             char quote = _source[_position];
@@ -117,9 +132,18 @@ namespace InterpreterTest
             return new Token(Token.TokenType.Comment, comment);
         }
 
+
+        //This is basically a custom While Loop
+        //It takes a function calling it "predicate"
+        //Func<char, bool> is the type of function it takes
+        //where char is the parameter
+        //and bool is the return type
+        //sample: private bool funcName(char c){}
         private string ReadWhile(Func<char, bool> predicate)
         {
             string result = "";
+            //here we can see predicate used to check if the current char of
+            //the sent code follows the conditions of the function that's sent
             while (_position < _source.Length && predicate(_source[_position]))
             {
                 result += _source[_position];
