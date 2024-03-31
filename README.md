@@ -10,8 +10,8 @@ This interpreter project is written using [C#](https://www.w3schools.com/cs/inde
 ## Parser Component
 ### Parser Class
 - The Parser class parses a list of tokens into an abstract syntax tree (AST). It has a constructor that initializes the list of tokens and the current position.
-- The Parse method initiates the parsing process by calling the Expression method.
-- The Expression, Term, and Factor methods implement the recursive descent parsing algorithm to handle expressions, terms, and factors, respectively.
+- The `Parse` method initiates the parsing process by calling the `Expression` method.
+- The `Expression`, `Term`, and `Factor` methods implement the recursive descent parsing algorithm to handle expressions, terms, and factors, respectively.
 
 ### ASTNode Heirarchy
 - The ASTNode class is an abstract base class for all nodes in the abstract syntax tree.
