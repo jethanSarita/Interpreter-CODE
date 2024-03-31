@@ -24,6 +24,9 @@ namespace InterpreterTest
             var lexer = new Lexer(source);
             List<Token> tokens = lexer.Tokenize();
 
+            Parser parser = new Parser(tokens);
+            ASTNode ast = parser.Parse(); 
+
             foreach (var token in tokens)
             {
                 Console.WriteLine(token);
