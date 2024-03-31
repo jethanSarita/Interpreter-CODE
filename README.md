@@ -9,11 +9,11 @@ This interpreter project is written using [C#](https://www.w3schools.com/cs/inde
 
 ## Parser Component
 ### Parser Class
-- The Parser class parses a list of tokens into an abstract syntax tree (AST). It has a constructor that initializes the list of tokens and the current position.
+- The Parser class parses a list of tokens into an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree). It has a constructor that initializes the list of tokens and the current position.
 - The `Parse` method initiates the parsing process by calling the `Expression` method.
-- The `Expression`, `Term`, and `Factor` methods implement the recursive descent parsing algorithm to handle expressions, terms, and factors, respectively.
+- The `Expression`, `Term`, and `Factor` methods implement the [recursive descent parsing algorithm](https://en.wikipedia.org/wiki/Recursive_descent_parser) to handle expressions, terms, and factors, respectively.
 
-### Grammar Rules (Extended Backus-Naur Form)
+### Grammar Rules ([Extended Backus-Naur Form](https://en.wikipedia.org/wiki/Extended_Backus–Naur_form))
 - Expression&nbsp;&nbsp;-> Term { ('+' | '-') Term }
 - Term&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Factor { ('*' | '/') Factor }
 - Factor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Literal | Identifier | '(' Expression ')'
