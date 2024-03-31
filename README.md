@@ -1,6 +1,6 @@
 # Interpreter Tings
-This interpreter project is written using [C#](https://www.w3schools.com/cs/index.php) programming language.
-[Book about crafting interpreters](https://craftinginterpreters.com/introduction.html)
+This interpreter project is written using [C#](https://www.w3schools.com/cs/index.php) programming language. <br />
+[Book about crafting interpreters](https://craftinginterpreters.com/introduction.html).
 
 ## Main Component
 (add description for documentation purposes)
