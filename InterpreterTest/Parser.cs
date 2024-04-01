@@ -10,6 +10,8 @@ namespace InterpreterTest
         private readonly List<Token> _tokens;
         private int _position;
 
+        private readonly string[] _keywords = { "INT", "BOOL", "CHAR", "FLOAT", "FALSE", "TRUE" };
+
         public Parser(List<Token> tokens)
         {
             _tokens = tokens;
@@ -18,81 +20,45 @@ namespace InterpreterTest
 
         public ASTNode Parse()
         {
-            return Expression();
+            return VariableDeclare();
         }
 
-        private ASTNode Expression()
+        private ASTNode VariableDeclare()
         {
-            ASTNode node = Term();
-            while (Match(TokenType.Operator, "+", "-"))
-            {
-                Token op = Consume();
-                ASTNode right = Term();
-                node = new BinaryExpressionNode(op, node, right);
-            }
-            return node;
-        }
+            // Expecting "INT", "BOOL", "CHAR", or "FLOAT" identifier
+            Token identifierToken = ConsumeExpected(TokenType.Identifier, _keywords);
 
-        private ASTNode Term()
-        {
-            ASTNode node = Factor();
-            while (Match(TokenType.Operator, "*", "/"))
+            // variable declaration for BOOL
+            if (identifierToken.Value == "BOOL")
             {
-                Token op = Consume();
-                ASTNode right = Factor();
-                node = new BinaryExpressionNode(op, node, right);
-            }
-            return node;
-        }
-
-        private ASTNode Factor()
-        {
-            if (Match(TokenType.Literal))
-            {
-                return new LiteralNode(Consume());
-            }
-            else if (Match(TokenType.Identifier))
-            {
-                return new IdentifierNode(Consume());
-            }
-            else if (Match(TokenType.Operator, "("))
-            {
-                Consume(); // Consume '('
-                ASTNode expression = Expression();
-                if (!Match(TokenType.Operator, ")"))
-                {
-                    throw new Exception("Expected ')' after expression.");
-                }
-                Consume(); // Consume ')'
-                return expression;
+                Token keywordToken = ConsumeExpected(TokenType.Keyword);
+                Token operatorToken = ConsumeExpected(TokenType.Operator, "=");
+                Token valueToken = ConsumeExpected(TokenType.Identifier, "TRUE", "FALSE");
+                Token separatorToken = ConsumeExpected(TokenType.Separator, ";"); 
+                return new DeclareNode(identifierToken, keywordToken, operatorToken, valueToken, separatorToken);
             }
             else
             {
-                throw new Exception("Unexpected token.");
+            // variable declaration for INT, CHAR
+                Token keywordToken = ConsumeExpected(TokenType.Keyword);
+                Token operatorToken = ConsumeExpected(TokenType.Operator, "=");
+                Token literalToken = ConsumeExpected(TokenType.Literal);
+                Token separatorToken = ConsumeExpected(TokenType.Separator, ";"); 
+                return new DeclareNode(identifierToken, keywordToken, operatorToken, literalToken, separatorToken);
             }
         }
 
-        // Utility methods for token manipulation
-
-        private bool Match(TokenType type, params string[] values)
+        private Token ConsumeExpected(TokenType type, params string[] values)
         {
-            if (_position >= _tokens.Count)
+            Token token = Consume();
+            if (token.Type != type || (values != null && values.Length > 0 && !values.Contains(token.Value)))
             {
-                return false;
+                string expectedValues = values != null ? string.Join(", ", values) : "any value";
+                throw new Exception($"Expected token of type {type} and one of the following values: {expectedValues}, but got {token}.");
             }
-            Token token = _tokens[_position];
-            if (token.Type == type)
-            {
-                foreach (string value in values)
-                {
-                    if (token.Value == value)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return token;
         }
+
 
         private Token Consume()
         {
@@ -104,41 +70,23 @@ namespace InterpreterTest
         }
     }
 
-    // Define the abstract syntax tree nodes
     internal abstract class ASTNode { }
 
-    internal class BinaryExpressionNode : ASTNode
-    {
-        public Token Operator { get; }
-        public ASTNode Left { get; }
-        public ASTNode Right { get; }
-
-        public BinaryExpressionNode(Token op, ASTNode left, ASTNode right)
-        {
-            Operator = op;
-            Left = left;
-            Right = right;
-        }
-    }
-
-    internal class LiteralNode : ASTNode
-    {
-        public Token Literal { get; }
-
-        public LiteralNode(Token literal)
-        {
-            Literal = literal;
-        }
-    }
-
-    internal class IdentifierNode : ASTNode
+    internal class DeclareNode : ASTNode
     {
         public Token Identifier { get; }
+        public Token Keyword { get; }
+        public Token Operator { get; }
+        public Token Literal { get; }
+        public Token Separator { get; }
 
-        public IdentifierNode(Token identifier)
+        public DeclareNode(Token identifier, Token keyword, Token @operator, Token literal,  Token separator)
         {
             Identifier = identifier;
+            Keyword = keyword;
+            Operator = @operator;
+            Literal = literal;
+            Separator = separator;
         }
     }
 }
-
