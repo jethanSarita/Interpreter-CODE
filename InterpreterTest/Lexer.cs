@@ -27,7 +27,7 @@ namespace InterpreterTest
             {
                 char currentChar = _source[_position];
 
-                if (char.IsWhiteSpace(currentChar))
+                if (char.IsWhiteSpace(currentChar) && currentChar != '\n')
                 {
                     _position++;
                     continue;
@@ -235,6 +235,11 @@ namespace InterpreterTest
                 {
                     tokens.Add(ReadSingleLineComment());
                     //_position++;
+                }
+                else if (currentChar == '\n')
+                {
+                    tokens.Add(new Token(Token.TokenType.LINE_SEPARATOR, "\n"));
+                    _position++;
                 }
                 else
                 {

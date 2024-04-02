@@ -61,11 +61,42 @@ namespace InterpreterTest
                         {
                             statements.Add(ParseVariableDeclaration(currentToken, toks));
                         }
+                        //Console.WriteLine("Current Token: " + _tokens[_position]);
+                        _position++;
+                        currentToken = _tokens[_position];
+                        if (currentToken.Type == TokenType.EQUAL)
+                        {
+                            if (!(Peek().Type == TokenType.NUMBER ||
+                                Peek().Type == TokenType.LETTER ||
+                                Peek().Type == TokenType.TRUE ||
+                                Peek().Type == TokenType.FALSE ||
+                                Peek().Type == TokenType.DECIMAL_NUMBER))
+                            {
+                                throw new InvalidOperationException($"No literal assignment after '='");
+                            }
+                            else
+                            {
+                                foreach (var toks in identifiers)
+                                {
+                                    statements.Add(ParseVariableAssignment(toks, Peek()));
+                                }
+                                _position++;
+                            }
+                            
+                        }
                     }
                     else
                     {
                         throw new InvalidOperationException($"Invalid {currentToken.Value} declaration");
                     }
+                }
+                if (currentToken.Type == TokenType.DISPLAY)
+                {
+                    statements.Add(ParseDisplayStatement());
+                }
+                if (currentToken.Type == TokenType.SCAN)
+                {
+                    statements.Add(ParseScanStatement());
                 }
                 _position++;
             }
@@ -107,7 +138,7 @@ namespace InterpreterTest
 
         }
 
-        private ASTNode Statement()
+        /*private ASTNode Statement()
         {
             if (!_insideCodeBlock)
             {
@@ -115,12 +146,128 @@ namespace InterpreterTest
             }
             // other parsing logic for different types of statements
             return new PlaceholderNode("PlaceholderStatement");
-        }
+        }*/
 
         private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
         {
             return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
         }
+
+        private ASTNode ParseDisplayStatement()
+        {
+            _position++;
+
+            //after DISPLAY there should be a colon ':'
+            if (_tokens[_position].Type != TokenType.COLON)
+            {
+                throw new InvalidOperationException("Expected ':' after DISPLAY statement");
+            }
+            _position++;
+
+            //parse display items until end of the line
+            List<string> displayItems = new List<string>();
+            while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
+            {
+                string displayItem = ParseDisplayItem();
+                displayItems.Add(displayItem);
+
+                //check if more items to display pa
+                if (_position < _tokens.Count - 1 && _tokens[_position + 1].Type == TokenType.CONCATENATE)
+                {
+                    _position++;
+
+                    //parse the next display item
+                    displayItem = ParseDisplayItem();
+                    displayItems.Add(displayItem);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            _position++;
+            return new DisplayStatementNode(string.Join("", displayItems));
+        }
+
+        private string ParseDisplayItem()
+        {
+            Token currToken = _tokens[_position];
+
+            //handle different types of display items
+            switch (currToken.Type)
+            {
+                case TokenType.IDENTIFIER:
+                    return currToken.Value;
+
+                case TokenType.STRING:
+                    return currToken.Value;
+
+                case TokenType.NUMBER:
+                    return currToken.Value;
+
+                case TokenType.TRUE:
+                case TokenType.FALSE:
+                    return currToken.Value;
+
+                case TokenType.LETTER:
+                    return "" + currToken.Value + "'";
+
+                default:
+                    throw new InvalidOperationException($"Invalid token type in DISPLAY statement: {currToken.Type}");
+            }
+        }
+
+        private ASTNode ParseScanStatement()
+        {
+            _position++;
+
+            //there should be colon after SCAN
+            if (_tokens[_position].Type != TokenType.COLON)
+            {
+                throw new InvalidOperationException("Expected ':' after SCAN statement");
+            }
+            _position++;
+
+            List<ASTNode> scans = new List<ASTNode>();
+            while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
+            {
+                Token currToken = _tokens[_position];
+
+                switch (currToken.Type)
+                {
+                    case TokenType.STRING:
+                        scans.Add(new StringLiteralNode(currToken.Value));
+                        break;
+
+                    case TokenType.NUMBER:
+                        scans.Add(new NumberLiteralNode(currToken.Value));
+                        break;
+
+                    //should I add for bool    
+
+                    default:
+                        throw new InvalidOperationException("Invalid token in SCAN statement");
+                }
+
+                _position++;
+
+                //if there is comma then there is another pa
+                if (_tokens[_position].Type == TokenType.COMMA)
+                {
+                    _position++;
+                }
+            }
+            _position++;
+            return new ScanStatementNode(scans);
+        }
+
+        private ASTNode ParseVariableAssignment(Token variableName, Token literal)
+        {
+            return new VariableAssignmentNode(variableName.Value, literal.Value, literal.Type.ToString());
+        }
+
+
     }
 
     internal abstract class ASTNode { }
@@ -148,23 +295,74 @@ namespace InterpreterTest
 
         public override String ToString()
         {
-            return $"Data Type: {_dataType}, VariableName: {_varName}";
+            return $"Data Type: {_dataType}, Variable Name: {_varName}";
         }
 
     }
 
-    internal class PlaceholderNode : ASTNode
+    internal class VariableAssignmentNode : ASTNode
     {
-        public string StatementType { get; }
+        public String _varName { get; }
+        public String _literal { get; }
+        public String _literalType { get; }
 
-        public PlaceholderNode(string statementType)
+        public VariableAssignmentNode(string varName, string literal , string literalType)
         {
-            StatementType = statementType;
+            _varName = varName;
+            _literal = literal;
+            _literalType = literalType;
+        }
+
+        public override String ToString()
+        {
+            return $"Variable Name: {_varName}, Value: {_literal}, Literal Type: {_literalType}";
+        }
+
+    }
+
+    internal class DisplayStatementNode : ASTNode
+    {
+        public string Identifier { get; }
+
+        public DisplayStatementNode(string identifier)
+        {
+            Identifier = identifier;
         }
 
         public override string ToString()
         {
-            return $"PlaceholderNode: {StatementType}";
+            return Identifier;
         }
+    }
+
+    internal class StringLiteralNode : ASTNode
+    {
+        public string Value { get; }
+
+        public StringLiteralNode(string value)
+        {
+            Value = value;
+        }
+    }
+
+    internal class NumberLiteralNode : ASTNode
+    {
+        public string Number { get; }
+
+        public NumberLiteralNode(string number)
+        {
+            Number = number;
+        }
+    }
+
+    internal class ScanStatementNode : ASTNode
+    {
+        public List<ASTNode> Scans { get; }
+
+        public ScanStatementNode(List<ASTNode> scans)
+        {
+            Scans = scans;
+        }
+
     }
 }

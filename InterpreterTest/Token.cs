@@ -82,6 +82,7 @@ namespace InterpreterTest
             END,            // "END"
             CODE,           // "CODE"
             
+            LINE_SEPARATOR,  // "\n"
 
             EOF,
         }

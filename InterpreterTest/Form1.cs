@@ -22,6 +22,17 @@ namespace InterpreterTest
         private void button1_Click(object sender, EventArgs e)
         {
             string source = tbInput.Text;
+
+            Console.WriteLine(source);
+
+            /*foreach (char c in source)
+            {
+                if (c == '\n')
+                {
+                    Console.WriteLine("found found");
+                }
+            }*/
+
             var lexer = new Lexer(source);
             List<Token> tokens = lexer.Tokenize();
 
