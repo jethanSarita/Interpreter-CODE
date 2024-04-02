@@ -46,7 +46,15 @@ namespace InterpreterTest
             {
                 if (node is VariableDeclarationNode variableNode)
                 {
-                    Console.WriteLine("VariableNode: " + variableNode.ToString());
+                    Console.WriteLine("variableNode: " + variableNode.ToString());
+                }
+                if (node is DisplayStatementNode displanyNode)
+                {
+                    Console.WriteLine("displanyNode: " + displanyNode.ToString());
+                }
+                if (node is VariableAssignmentNode assignmentNode)
+                {
+                    Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
                 }
             }
 

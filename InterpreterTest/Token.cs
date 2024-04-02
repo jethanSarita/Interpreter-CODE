@@ -44,10 +44,12 @@ namespace InterpreterTest
             GREATER_EQUAL,  // >=
             LESS,           // <
             LESS_EQUAL,     // <=
+
             //Literals
             IDENTIFIER,     // num1, varName, x, y
             LETTER,         // 'a', 'b', 'c'
-            NUMBER,         // 22, 345.3
+            NUMBER,         // 22
+            DECIMAL_NUMBER,  // 345.3
             STRING,         // "Ola"
             //Keywords
 
@@ -72,6 +74,8 @@ namespace InterpreterTest
 
             //Print
             DISPLAY,        // "DISPLAY"
+            //Scan
+            SCAN,           // "SCAN"
 
             //Blocking
             BEGIN,          // "BEGIN"
