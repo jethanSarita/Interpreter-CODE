@@ -39,6 +39,7 @@ namespace InterpreterTest
             var statements = new List<ASTNode>();
             while (_position < _tokens.Count)
             {
+                currentToken = _tokens[_position];
                 if (currentToken.Type == TokenType.END && Peek().Type == TokenType.CODE)
                 {
                     _insideCodeBlock = false;
@@ -54,6 +55,7 @@ namespace InterpreterTest
                 {
                     if (Peek().Type == TokenType.IDENTIFIER)
                     {
+                        _position++;
                         List<Token> identifiers = ReadIdentifiers();
                         foreach (var toks in identifiers)
                         {
@@ -65,10 +67,7 @@ namespace InterpreterTest
                         throw new InvalidOperationException($"Invalid {currentToken.Value} declaration");
                     }
                 }
-                if (currentToken.Type == TokenType.DISPLAY)
-                {
-
-                }
+                _position++;
             }
             return new ProgramNode(statements);
         }
@@ -81,24 +80,28 @@ namespace InterpreterTest
         private List<Token> ReadIdentifiers()
         {
             List<Token> toks = new List<Token>();
-            Token currTok = _tokens[_position];
-            bool commaCheck = true;
+            Token currTok;
+            bool commaCheck = false;
             while (true)
             {
-                if (_tokens[_position++].Type == TokenType.IDENTIFIER)
+                currTok = _tokens[_position];
+                //Console.WriteLine("Currently reading: " + currTok.Value);
+                if (currTok.Type == TokenType.IDENTIFIER)
                 {
                     commaCheck = true;
+                    //Console.WriteLine("Currently storing: " + currTok.Value);
                     toks.Add(currTok);
                 }
-                else if (_tokens[_position++].Type == TokenType.COMMA && commaCheck)
+                else if (currTok.Type == TokenType.COMMA && commaCheck)
                 {
                     commaCheck = false;
-                    _position++;
                 }
                 else
                 {
+                    _position--;
                     break;
                 }
+                _position++;
             }
             return toks;
 
@@ -122,6 +125,16 @@ namespace InterpreterTest
 
     internal abstract class ASTNode { }
 
+    internal class ProgramNode : ASTNode
+    {
+        public List<ASTNode> Statements { get; }
+
+        public ProgramNode(List<ASTNode> statements)
+        {
+            Statements = statements;
+        }
+    }
+
     internal class VariableDeclarationNode : ASTNode
     {
         public String _dataType  { get; }
@@ -132,16 +145,12 @@ namespace InterpreterTest
             _dataType = dataType;
             _varName = varName;
         }
-    }
 
-    internal class ProgramNode : ASTNode
-    {
-        public List<ASTNode> Statements { get; }
-
-        public ProgramNode(List<ASTNode> statements)
+        public override String ToString()
         {
-            Statements = statements;
+            return $"Data Type: {_dataType}, VariableName: {_varName}";
         }
+
     }
 
     internal class PlaceholderNode : ASTNode

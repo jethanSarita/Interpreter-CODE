@@ -42,7 +42,13 @@ namespace InterpreterTest
             Parser parser = new Parser(tokens);
             ProgramNode ast = parser.Parse();
 
-            Console.WriteLine(ast.Statements);
+            foreach (ASTNode node in ast.Statements)
+            {
+                if (node is VariableDeclarationNode variableNode)
+                {
+                    Console.WriteLine("VariableNode: " + variableNode.ToString());
+                }
+            }
 
             /*Parser parser = new Parser(tokens);
             ASTNode ast = null;
