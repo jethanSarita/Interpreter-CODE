@@ -1,0 +1,16 @@
+﻿# this is a sample program in CODE
+BEGIN CODE
+	INT x, y, z = 5
+	CHAR a_1 = ’n’
+	BOOL t = ”TRUE”
+	x = y = 4
+	a_1 = ’c’
+	# this is a comment
+	DISPLAY: x & t & z & $ & a_1 & [#] & “last”
+END CODE
+
+Something to note is that both line 5 and line 9 use '""' but is denoted as
+different datatypes, line 5 is a boolean while line 9 is a string
+even though string datatypes is not mentioned in ma'am's given documentation
+
+I think we should just make TRUE and FALSE keywords without the need of '""'
