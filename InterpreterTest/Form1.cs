@@ -27,10 +27,13 @@ namespace InterpreterTest
 
             if (tokens.Count > 0)
             {
-                foreach (var token in tokens)
+                /*foreach (var token in tokens)
                 {
                     Console.WriteLine(token);
-                }
+                }*/
+                Console.WriteLine("0: " + tokens[0]);
+                Console.WriteLine("1: " + tokens[1]);
+                Console.WriteLine("2: " + tokens[2]);
                 lblOutput.Text = "the lexer is lexing";
             }
             else

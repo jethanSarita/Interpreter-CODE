@@ -321,7 +321,8 @@ namespace InterpreterTest
         private Token ReadSingleLineComment()
         {
             string comment = ReadWhile(c => c != '\n');
-            return new Token(Token.TokenType.COMMENT, comment);
+            string srubbed = comment.Remove(comment.Length - 1);
+            return new Token(Token.TokenType.COMMENT, srubbed);
         }
 
 
