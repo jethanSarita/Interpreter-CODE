@@ -68,5 +68,15 @@ namespace InterpreterTest
             lblOutput2.ResetText();
             tbInput.ResetText();
         }
+
+        private void lblOutput_Click(object sender, EventArgs e)
+        {
+            //dont change
+        }
+
+        private void lblOutput2_Click(object sender, EventArgs e)
+        {
+            //dont change
+        }
     }
 }
