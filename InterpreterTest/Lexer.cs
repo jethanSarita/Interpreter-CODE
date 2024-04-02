@@ -11,7 +11,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "BOOL", "CHAR", "FLOAT", "INT" };
+        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE" };
 
         public Lexer(string source)
         {
@@ -36,43 +36,180 @@ namespace InterpreterTest
                 if (IsLetterOr_(currentChar))
                 {
                     //continue to read the rest of it and store in
-                    //identifier. Stop until space or non letter/digit/_
+                    //data. Stop until space or non letter/digit/_
                     //sample: x, INT, variable_name, num1
-                    string identifier = ReadWhile(IsLetterOrDigitOr_);
+                    string data = ReadWhile(IsLetterOrDigitOr_);
+                    //_position++;
                     //Check if its reserved word
-                    if (Keywords.Contains(identifier))
+                    if (Keywords.Contains(data))
                     {
-
-                        tokens.Add(new Token(Token.TokenType.Identifier, identifier));
+                        switch(data)
+                        {
+                            case "INT":
+                                tokens.Add(new Token(Token.TokenType.INT, data));
+                                break;
+                            case "CHAR":
+                                tokens.Add(new Token(Token.TokenType.CHAR, data));
+                                break;
+                            case "FLOAT":
+                                tokens.Add(new Token(Token.TokenType.FLOAT, data));
+                                break;
+                            case "BOOL":
+                                tokens.Add(new Token(Token.TokenType.BOOL, data));
+                                break;
+                            case "TRUE":
+                                tokens.Add(new Token(Token.TokenType.TRUE, data));
+                                break;
+                            case "FALSE":
+                                tokens.Add(new Token(Token.TokenType.FALSE, data));
+                                break;
+                            case "IF":
+                                tokens.Add(new Token(Token.TokenType.IF, data));
+                                break;
+                            case "NOT":
+                                tokens.Add(new Token(Token.TokenType.NOT, data));
+                                break;
+                            case "AND":
+                                tokens.Add(new Token(Token.TokenType.AND, data));
+                                break;
+                            case "OR":
+                                tokens.Add(new Token(Token.TokenType.OR, data));
+                                break;
+                            case "DISPLAY":
+                                tokens.Add(new Token(Token.TokenType.DISPLAY, data));
+                                break;
+                            case "BEGIN":
+                                tokens.Add(new Token(Token.TokenType.BEGIN, data));
+                                break;
+                            case "END":
+                                tokens.Add(new Token(Token.TokenType.END, data));
+                                break;
+                            case "CODE":
+                                tokens.Add(new Token(Token.TokenType.CODE, data));
+                                break;
+                        }
                     }
                     else
                     {
-                        tokens.Add(new Token(Token.TokenType.Keyword, identifier));
+                        tokens.Add(new Token(Token.TokenType.IDENTIFIER, data));
                     }
                 }
                 else if (char.IsDigit(currentChar))
                 {
-                    string literal = ReadWhile(char.IsDigit);
-                    tokens.Add(new Token(Token.TokenType.Literal, literal));
+                    string number = ReadWhile(char.IsDigit);
+                    tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                    //_position++;
                 }
-                else if (IsOperator(currentChar))
+                else if (IsBinaryOperator(currentChar))
                 {
-                    string op = ReadWhile(IsOperator);
-                    tokens.Add(new Token(Token.TokenType.Operator, op));
+                    string data = "" + currentChar;
+                    //+-/*%
+                    switch (currentChar)
+                    {
+                        case '+':
+                            tokens.Add(new Token(Token.TokenType.PLUS, data));
+                            break;
+                        case '-':
+                            tokens.Add(new Token(Token.TokenType.MINUS, data));
+                            break;
+                        case '/':
+                            tokens.Add(new Token(Token.TokenType.SLASH, data));
+                            break;
+                        case '*':
+                            tokens.Add(new Token(Token.TokenType.STAR, data));
+                            break;
+                        case '%':
+                            tokens.Add(new Token(Token.TokenType.MODULO, data));
+                            break;
+                        case '=':
+                            if (Peek() == '=')
+                            {
+                                data += '=';
+                                tokens.Add(new Token(Token.TokenType.EQUAL_EQUAL, data));
+                                _position++;
+                            }
+                            else
+                            {
+                                tokens.Add(new Token(Token.TokenType.EQUAL, data));
+                            }
+                            break;
+                    }
+                    _position++;
                 }
                 else if (IsSeparator(currentChar))
                 {
-                    string separator = currentChar.ToString();
-                    tokens.Add(new Token(Token.TokenType.Separator, separator));
+                    string data = "" + currentChar;
+                    switch (currentChar)
+                    {
+                        //()[]"
+                        case '(':
+                            tokens.Add(new Token(Token.TokenType.LEFT_PAREN, data));
+                            break;
+                        case ')':
+                            tokens.Add(new Token(Token.TokenType.RIGHT_PAREN, data));
+                            break;
+                        case '[':
+                            tokens.Add(new Token(Token.TokenType.LEFT_SQUARE, data));
+                            break;
+                        case ']':
+                            tokens.Add(new Token(Token.TokenType.RIGHT_SQUARE, data));
+                            break;
+                    }
                     _position++;
                 }
-                else if (currentChar == '"' || currentChar == '\'')
+                else if (IsLogicOperator(currentChar))
+                {
+                    string data = "" + currentChar;
+                    switch(currentChar)
+                    {
+                        //<,>,<=,>=,<>
+                        case '<':
+                            if (Peek() == '=')
+                            {
+                                data += '=';
+                                tokens.Add(new Token(Token.TokenType.LESS_EQUAL, data));
+                                _position++;
+                            }
+                            else if (Peek() == '>')
+                            {
+                                data += '>';
+                                tokens.Add(new Token(Token.TokenType.NOT_EQUAL, data));
+                                _position++;
+                            }
+                            else
+                            {
+                                tokens.Add(new Token(Token.TokenType.LESS, data));
+                            }
+                            break;
+                        case '>':
+                            if (Peek() == '=')
+                            {
+                                data += '=';
+                                tokens.Add(new Token(Token.TokenType.GREATER_EQUAL, data));
+                                _position++;
+                            }
+                            else
+                            {
+                                tokens.Add(new Token(Token.TokenType.GREATER, data));
+                            }
+                            break;
+                    }
+                    _position++;
+                }
+                else if (currentChar == '"')
                 {
                     tokens.Add(ReadStringLiteral());
+                    //_position++;
+                }
+                else if (currentChar == '\'')
+                {
+                    tokens.Add(ReadCharLiteral());
+                    //_position++;
                 }
                 else if (currentChar == '#')
                 {
                     tokens.Add(ReadSingleLineComment());
+                    //_position++;
                 }
                 else
                 {
@@ -82,16 +219,32 @@ namespace InterpreterTest
             return tokens;
         }
 
-        private bool IsOperator(char c)
+        private char Peek()
         {
-            string operators = "()*/%+-=<>";
+            int peekPos = _position + 1;
+            if (peekPos < _source.Length)
+            {
+                return _source[_position + 1];
+            }
+            return '\0';
+        }
+
+        private bool IsLogicOperator(char c)
+        {
+            string logicOperators = "><=";
+            return logicOperators.Contains(c);
+        }
+
+        private bool IsBinaryOperator(char c)
+        {
+            string operators = "+-/*%=";
             return operators.Contains(c);
         }
 
         private bool IsSeparator(char c)
         {
-            string separators = "\n";
-            return separators.Contains(c);
+            string operators = "()[]";
+            return operators.Contains(c);
         }
 
         private bool IsLetterOr_(char c)
@@ -103,7 +256,6 @@ namespace InterpreterTest
         {
             return char.IsLetterOrDigit(c) || c == '_';
         }
-
         private Token ReadStringLiteral()
         {
             char quote = _source[_position];
@@ -117,7 +269,7 @@ namespace InterpreterTest
                 if (currentChar == quote)
                 {
                     _position++;
-                    return new Token(Token.TokenType.Literal, literal);
+                    return new Token(Token.TokenType.STRING, literal);
                 }
                 literal += currentChar;
                 _position++;
@@ -126,10 +278,28 @@ namespace InterpreterTest
             throw new InvalidOperationException("Unterminated string literal");
         }
 
+        private Token ReadCharLiteral()
+        {
+            _position++;
+
+            string letter = "" + _source[_position];
+            
+            if (Peek() == '\'')
+            {
+                _position++;
+                _position++;
+                return new Token(Token.TokenType.LETTER, letter);
+            }
+            else
+            {
+                throw new InvalidOperationException("Char literal error");
+            }
+        }
+
         private Token ReadSingleLineComment()
         {
             string comment = ReadWhile(c => c != '\n');
-            return new Token(Token.TokenType.Comment, comment);
+            return new Token(Token.TokenType.COMMENT, comment);
         }
 
 

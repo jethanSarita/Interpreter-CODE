@@ -22,12 +22,15 @@ namespace InterpreterTest
         private void button1_Click(object sender, EventArgs e)
         {
             string source = tbInput.Text;
-
             var lexer = new Lexer(source);
             List<Token> tokens = lexer.Tokenize();
 
             if (tokens.Count > 0)
             {
+                foreach (var token in tokens)
+                {
+                    Console.WriteLine(token);
+                }
                 lblOutput.Text = "the lexer is lexing";
             }
             else
@@ -36,7 +39,7 @@ namespace InterpreterTest
                 return;
             }
 
-            Parser parser = new Parser(tokens);
+            /*Parser parser = new Parser(tokens);
             ASTNode ast = null;
             try
             {
@@ -52,7 +55,7 @@ namespace InterpreterTest
             foreach (var token in tokens)
             {
                 Console.WriteLine(token);
-            }
+            }*/
 
         }
 

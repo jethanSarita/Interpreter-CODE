@@ -38,19 +38,18 @@
             // tbInput
             // 
             this.tbInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbInput.Location = new System.Drawing.Point(337, 66);
-            this.tbInput.Margin = new System.Windows.Forms.Padding(4);
+            this.tbInput.Location = new System.Drawing.Point(25, 12);
+            this.tbInput.Multiline = true;
             this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(339, 36);
+            this.tbInput.Size = new System.Drawing.Size(567, 259);
             this.tbInput.TabIndex = 0;
             // 
             // btnRun
             // 
             this.btnRun.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRun.Location = new System.Drawing.Point(336, 172);
-            this.btnRun.Margin = new System.Windows.Forms.Padding(4);
+            this.btnRun.Location = new System.Drawing.Point(616, 12);
             this.btnRun.Name = "btnRun";
-            this.btnRun.Size = new System.Drawing.Size(150, 100);
+            this.btnRun.Size = new System.Drawing.Size(112, 81);
             this.btnRun.TabIndex = 1;
             this.btnRun.Text = "Run";
             this.btnRun.UseVisualStyleBackColor = true;
@@ -60,9 +59,10 @@
             // 
             this.lblOutput.AutoSize = true;
             this.lblOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOutput.Location = new System.Drawing.Point(349, 333);
+            this.lblOutput.Location = new System.Drawing.Point(19, 325);
+            this.lblOutput.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblOutput.Name = "lblOutput";
-            this.lblOutput.Size = new System.Drawing.Size(0, 39);
+            this.lblOutput.Size = new System.Drawing.Size(0, 31);
             this.lblOutput.TabIndex = 2;
             this.lblOutput.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -70,9 +70,10 @@
             // 
             this.lblOutput2.AutoSize = true;
             this.lblOutput2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOutput2.Location = new System.Drawing.Point(30, 439);
+            this.lblOutput2.Location = new System.Drawing.Point(11, 374);
+            this.lblOutput2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblOutput2.Name = "lblOutput2";
-            this.lblOutput2.Size = new System.Drawing.Size(63, 24);
+            this.lblOutput2.Size = new System.Drawing.Size(50, 18);
             this.lblOutput2.TabIndex = 3;
             this.lblOutput2.Text = "parser";
             this.lblOutput2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -80,10 +81,9 @@
             // btnClear
             // 
             this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(526, 172);
-            this.btnClear.Margin = new System.Windows.Forms.Padding(4);
+            this.btnClear.Location = new System.Drawing.Point(616, 99);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(150, 100);
+            this.btnClear.Size = new System.Drawing.Size(112, 81);
             this.btnClear.TabIndex = 4;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -91,15 +91,14 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblOutput2);
             this.Controls.Add(this.lblOutput);
             this.Controls.Add(this.btnRun);
             this.Controls.Add(this.tbInput);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);

@@ -22,10 +22,9 @@ namespace InterpreterTest
             MODULO,         // %
             COMMENT,        // #
             CONCATENATE,    // &
-            QUOTE,          // "
+            EQUAL,          // =
             //One or two character tokens
             NOT_EQUAL,      // <>
-            EQUAL,          // =
             EQUAL_EQUAL,    // ==
             GREATER,        // >
             GREATER_EQUAL,  // >=
@@ -35,6 +34,7 @@ namespace InterpreterTest
             IDENTIFIER,     // num1, varName, x, y
             LETTER,         // 'a', 'b', 'c'
             NUMBER,         // 22, 345.3
+            STRING,         // 
             //Keywords
             INT,            // "INT"
             CHAR,           // "CHAR"
