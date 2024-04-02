@@ -41,7 +41,7 @@
             this.tbInput.Location = new System.Drawing.Point(25, 12);
             this.tbInput.Multiline = true;
             this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(567, 259);
+            this.tbInput.Size = new System.Drawing.Size(567, 293);
             this.tbInput.TabIndex = 0;
             // 
             // btnRun

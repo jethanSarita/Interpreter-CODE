@@ -141,18 +141,30 @@ namespace InterpreterTest
                     string data = "" + currentChar;
                     switch (currentChar)
                     {
-                        //()[]"
+                        //()[],:&$"
                         case '(':
                             tokens.Add(new Token(Token.TokenType.LEFT_PAREN, data));
                             break;
                         case ')':
                             tokens.Add(new Token(Token.TokenType.RIGHT_PAREN, data));
                             break;
-                        case '[':
+                        /*case '[':
                             tokens.Add(new Token(Token.TokenType.LEFT_SQUARE, data));
                             break;
                         case ']':
                             tokens.Add(new Token(Token.TokenType.RIGHT_SQUARE, data));
+                            break;*/
+                        case ',':
+                            tokens.Add(new Token(Token.TokenType.COMMA, data));
+                            break;
+                        case ':':
+                            tokens.Add(new Token(Token.TokenType.COLON, data));
+                            break;
+                        case '&':
+                            tokens.Add(new Token(Token.TokenType.CONCATENATE, data));
+                            break;
+                        case '$':
+                            tokens.Add(new Token(Token.TokenType.NEXT_LINE, data));
                             break;
                     }
                     _position++;
@@ -201,7 +213,7 @@ namespace InterpreterTest
                     tokens.Add(ReadStringLiteral());
                     //_position++;
                 }
-                else if (currentChar == '\'')
+                else if (currentChar == '\'' || currentChar == '[' || currentChar == ']')
                 {
                     tokens.Add(ReadCharLiteral());
                     //_position++;
@@ -243,7 +255,7 @@ namespace InterpreterTest
 
         private bool IsSeparator(char c)
         {
-            string operators = "()[]";
+            string operators = "(),:&$";
             return operators.Contains(c);
         }
 
@@ -280,11 +292,21 @@ namespace InterpreterTest
 
         private Token ReadCharLiteral()
         {
+            char quote = _source[_position];
             _position++;
+
+            if (quote == '[')
+            {
+                quote = ']';
+            }
+            else if (quote == ']')
+            {
+                throw new InvalidOperationException($"Wrong escape code open at line {_position}: {quote}");
+            }
 
             string letter = "" + _source[_position];
             
-            if (Peek() == '\'')
+            if (Peek() == quote)
             {
                 _position++;
                 _position++;
@@ -292,7 +314,7 @@ namespace InterpreterTest
             }
             else
             {
-                throw new InvalidOperationException("Char literal error");
+                throw new InvalidOperationException($"Char literal error {Peek()} != {quote}");
             }
         }
 

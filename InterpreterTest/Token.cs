@@ -23,6 +23,9 @@ namespace InterpreterTest
             COMMENT,        // #
             CONCATENATE,    // &
             EQUAL,          // =
+            COMMA,          // ,
+            COLON,          // :
+            NEXT_LINE,       // $
             //One or two character tokens
             NOT_EQUAL,      // <>
             EQUAL_EQUAL,    // ==
