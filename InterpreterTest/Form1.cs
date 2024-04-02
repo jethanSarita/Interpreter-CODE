@@ -22,24 +22,51 @@ namespace InterpreterTest
         private void button1_Click(object sender, EventArgs e)
         {
             string source = tbInput.Text;
+
+            Console.WriteLine(source);
+
+            /*foreach (char c in source)
+            {
+                if (c == '\n')
+                {
+                    Console.WriteLine("found found");
+                }
+            }*/
+
             var lexer = new Lexer(source);
             List<Token> tokens = lexer.Tokenize();
 
             if (tokens.Count > 0)
             {
-                /*foreach (var token in tokens)
+                foreach (var token in tokens)
                 {
                     Console.WriteLine(token);
-                }*/
-                Console.WriteLine("0: " + tokens[0]);
-                Console.WriteLine("1: " + tokens[1]);
-                Console.WriteLine("2: " + tokens[2]);
+                }
                 lblOutput.Text = "the lexer is lexing";
             }
             else
             {
                 lblOutput.Text = "Lexer encountered an error.";
                 return;
+            }
+
+            Parser parser = new Parser(tokens);
+            ProgramNode ast = parser.Parse();
+
+            foreach (ASTNode node in ast.Statements)
+            {
+                if (node is VariableDeclarationNode variableNode)
+                {
+                    Console.WriteLine("variableNode: " + variableNode.ToString());
+                }
+                if (node is DisplayStatementNode displanyNode)
+                {
+                    Console.WriteLine("displanyNode: " + displanyNode.ToString());
+                }
+                if (node is VariableAssignmentNode assignmentNode)
+                {
+                    Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
+                }
             }
 
             /*Parser parser = new Parser(tokens);

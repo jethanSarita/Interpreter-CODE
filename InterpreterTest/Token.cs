@@ -11,19 +11,30 @@ namespace InterpreterTest
         public enum TokenType
         {
             //Single-character tokens
+
+            //Expression Seperators
             LEFT_PAREN,     // (
             RIGHT_PAREN,    // )
-            LEFT_SQUARE,    // [
-            RIGHT_SQUARE,   // ]
+
+            //BinaryOperators
             MINUS,          // -
             PLUS,           // +
             SLASH,          // /
             STAR,           // *
             MODULO,         // %
+
+            //Commenting
             COMMENT,        // #
+
+            //BinaryStringOperator
             CONCATENATE,    // &
+
+            //AssignmentOperator
             EQUAL,          // =
+
+            //AssignmentSeparator
             COMMA,          // ,
+
             COLON,          // :
             NEXT_LINE,       // $
             //One or two character tokens
@@ -33,26 +44,45 @@ namespace InterpreterTest
             GREATER_EQUAL,  // >=
             LESS,           // <
             LESS_EQUAL,     // <=
+
             //Literals
             IDENTIFIER,     // num1, varName, x, y
             LETTER,         // 'a', 'b', 'c'
-            NUMBER,         // 22, 345.3
-            STRING,         // 
+            NUMBER,         // 22
+            DECIMAL_NUMBER,  // 345.3
+            STRING,         // "Ola"
             //Keywords
+
+            //DataTypes
             INT,            // "INT"
             CHAR,           // "CHAR"
             FLOAT,          // "FLOAT"
             BOOL,           // "BOOL"
+
+            //Booleans
             TRUE,           // "TRUE"
             FALSE,          // "FALSE"
+
+            //Control flow
             IF,             // "IF"
+            ELSE,           // "ELSE"
+
+            //Logic Operators
             NOT,            // "NOT"
             AND,            // "AND"
             OR,             // "OR"
+
+            //Print
             DISPLAY,        // "DISPLAY"
+            //Scan
+            SCAN,           // "SCAN"
+
+            //Blocking
             BEGIN,          // "BEGIN"
             END,            // "END"
             CODE,           // "CODE"
+            
+            LINE_SEPARATOR,  // "\n"
 
             EOF,
         }

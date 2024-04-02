@@ -11,7 +11,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE" };
+        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE", "SCAN" };
 
         public Lexer(string source)
         {
@@ -27,7 +27,7 @@ namespace InterpreterTest
             {
                 char currentChar = _source[_position];
 
-                if (char.IsWhiteSpace(currentChar))
+                if (char.IsWhiteSpace(currentChar) && currentChar != '\n')
                 {
                     _position++;
                     continue;
@@ -87,6 +87,12 @@ namespace InterpreterTest
                             case "CODE":
                                 tokens.Add(new Token(Token.TokenType.CODE, data));
                                 break;
+                            case "ELSE":
+                                tokens.Add(new Token(Token.TokenType.ELSE, data));
+                                break;
+                            case "SCAN":
+                                tokens.Add(new Token(Token.TokenType.SCAN, data));
+                                break;
                         }
                     }
                     else
@@ -96,8 +102,15 @@ namespace InterpreterTest
                 }
                 else if (char.IsDigit(currentChar))
                 {
-                    string number = ReadWhile(char.IsDigit);
-                    tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                    string number = ReadWhile(c => char.IsDigit(c) || c == '.');
+                    if (float.TryParse(number, out float result))
+                    {
+                        tokens.Add(new Token(Token.TokenType.DECIMAL_NUMBER, number));
+                    }
+                    else
+                    {
+                        tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                    }
                     //_position++;
                 }
                 else if (IsBinaryOperator(currentChar))
@@ -222,6 +235,11 @@ namespace InterpreterTest
                 {
                     tokens.Add(ReadSingleLineComment());
                     //_position++;
+                }
+                else if (currentChar == '\n')
+                {
+                    tokens.Add(new Token(Token.TokenType.LINE_SEPARATOR, "\n"));
+                    _position++;
                 }
                 else
                 {
