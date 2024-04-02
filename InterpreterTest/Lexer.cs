@@ -11,7 +11,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE" };
+        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE" };
 
         public Lexer(string source)
         {
@@ -86,6 +86,9 @@ namespace InterpreterTest
                                 break;
                             case "CODE":
                                 tokens.Add(new Token(Token.TokenType.CODE, data));
+                                break;
+                            case "ELSE":
+                                tokens.Add(new Token(Token.TokenType.ELSE, data));
                                 break;
                         }
                     }

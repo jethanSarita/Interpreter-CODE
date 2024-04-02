@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.XPath;
 using static InterpreterTest.Token;
 
 namespace InterpreterTest
@@ -10,7 +11,12 @@ namespace InterpreterTest
         private readonly List<Token> _tokens;
         private int _position;
 
-        private readonly string[] _keywords = { "INT", "BOOL", "CHAR", "FLOAT", "FALSE", "TRUE" };
+        private readonly string[] _keywords = {
+            "INT", "BOOL", "CHAR", "FLOAT", "FALSE", "TRUE", "BEGIN", "END",
+            "DISPLAY", "SCAN", "IF", "ELSE", "WHILE", "AND", "OR", "NOT"
+        };
+
+        private bool _insideCodeBlock = false;
 
         public Parser(List<Token> tokens)
         {
@@ -18,75 +24,138 @@ namespace InterpreterTest
             _position = 0;
         }
 
-        public ASTNode Parse()
+        public ProgramNode Parse()
         {
-            return VariableDeclare();
+            Token currentToken = _tokens[_position];
+            if (!(currentToken.Type == TokenType.BEGIN && Peek().Type == TokenType.CODE))
+            {
+                throw new Exception("Expected 'BEGIN CODE'");
+            }
+
+            _position++;
+            _position++;
+            _insideCodeBlock = true;
+
+            var statements = new List<ASTNode>();
+            while (_position < _tokens.Count)
+            {
+                if (currentToken.Type == TokenType.END && Peek().Type == TokenType.CODE)
+                {
+                    _insideCodeBlock = false;
+                    break;
+                }
+
+                if (
+                    currentToken.Type == TokenType.INT ||
+                    currentToken.Type == TokenType.CHAR ||
+                    currentToken.Type == TokenType.FLOAT ||
+                    currentToken.Type == TokenType.BOOL
+                   )
+                {
+                    if (Peek().Type == TokenType.IDENTIFIER)
+                    {
+                        List<Token> identifiers = ReadIdentifiers();
+                        foreach (var toks in identifiers)
+                        {
+                            statements.Add(ParseVariableDeclaration(currentToken, toks));
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Invalid {currentToken.Value} declaration");
+                    }
+                }
+                if (currentToken.Type == TokenType.DISPLAY)
+                {
+
+                }
+            }
+            return new ProgramNode(statements);
         }
 
-        private ASTNode VariableDeclare()
+        private Token Peek()
         {
-            // Expecting "INT", "BOOL", "CHAR", or "FLOAT" identifier
-            Token identifierToken = ConsumeExpected(TokenType.Identifier, _keywords);
-
-            // variable declaration for BOOL
-            if (identifierToken.Value == "BOOL")
-            {
-                Token keywordToken = ConsumeExpected(TokenType.Keyword);
-                Token operatorToken = ConsumeExpected(TokenType.Operator, "=");
-                Token valueToken = ConsumeExpected(TokenType.Identifier, "TRUE", "FALSE");
-                Token separatorToken = ConsumeExpected(TokenType.Separator, ";"); 
-                return new DeclareNode(identifierToken, keywordToken, operatorToken, valueToken, separatorToken);
-            }
-            else
-            {
-            // variable declaration for INT, CHAR
-                Token keywordToken = ConsumeExpected(TokenType.Keyword);
-                Token operatorToken = ConsumeExpected(TokenType.Operator, "=");
-                Token literalToken = ConsumeExpected(TokenType.Literal);
-                Token separatorToken = ConsumeExpected(TokenType.Separator, ";"); 
-                return new DeclareNode(identifierToken, keywordToken, operatorToken, literalToken, separatorToken);
-            }
+            return _tokens[_position + 1];
         }
 
-        private Token ConsumeExpected(TokenType type, params string[] values)
+        private List<Token> ReadIdentifiers()
         {
-            Token token = Consume();
-            if (token.Type != type || (values != null && values.Length > 0 && !values.Contains(token.Value)))
+            List<Token> toks = new List<Token>();
+            Token currTok = _tokens[_position];
+            bool commaCheck = true;
+            while (true)
             {
-                string expectedValues = values != null ? string.Join(", ", values) : "any value";
-                throw new Exception($"Expected token of type {type} and one of the following values: {expectedValues}, but got {token}.");
+                if (_tokens[_position++].Type == TokenType.IDENTIFIER)
+                {
+                    commaCheck = true;
+                    toks.Add(currTok);
+                }
+                else if (_tokens[_position++].Type == TokenType.COMMA && commaCheck)
+                {
+                    commaCheck = false;
+                    _position++;
+                }
+                else
+                {
+                    break;
+                }
             }
-            return token;
+            return toks;
+
         }
 
-
-        private Token Consume()
+        private ASTNode Statement()
         {
-            if (_position >= _tokens.Count)
+            if (!_insideCodeBlock)
             {
-                throw new Exception("Unexpected end of input.");
+                throw new Exception("Statement outside CODE block.");
             }
-            return _tokens[_position++];
+            // other parsing logic for different types of statements
+            return new PlaceholderNode("PlaceholderStatement");
+        }
+
+        private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
+        {
+            return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
         }
     }
 
     internal abstract class ASTNode { }
 
-    internal class DeclareNode : ASTNode
+    internal class VariableDeclarationNode : ASTNode
     {
-        public Token Identifier { get; }
-        public Token Keyword { get; }
-        public Token Operator { get; }
-        public Token Literal { get; }
-        public Token Separator { get; }
+        public String _dataType  { get; }
+        public String _varName { get; }
 
-        public DeclareNode(Token identifier, Token keyword, Token @operator, Token literal,  Token separator)
+        public VariableDeclarationNode(string dataType, string varName)
         {
-            Identifier = identifier;
-            Keyword = keyword;
-            Operator = @operator;
-            Literal = literal;
-            Separator = separator;
+            _dataType = dataType;
+            _varName = varName;
+        }
+    }
+
+    internal class ProgramNode : ASTNode
+    {
+        public List<ASTNode> Statements { get; }
+
+        public ProgramNode(List<ASTNode> statements)
+        {
+            Statements = statements;
+        }
+    }
+
+    internal class PlaceholderNode : ASTNode
+    {
+        public string StatementType { get; }
+
+        public PlaceholderNode(string statementType)
+        {
+            StatementType = statementType;
+        }
+
+        public override string ToString()
+        {
+            return $"PlaceholderNode: {StatementType}";
         }
     }
 }
