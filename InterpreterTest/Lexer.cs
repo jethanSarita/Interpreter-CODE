@@ -11,7 +11,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "BOOL", "CHAR", "FALSE", "FLOAT", "INT", "TRUE" };
+        private static readonly string[] Keywords = { "BOOL", "CHAR", "FLOAT", "INT" };
 
         public Lexer(string source)
         {
@@ -90,7 +90,7 @@ namespace InterpreterTest
 
         private bool IsSeparator(char c)
         {
-            string separators = ";";
+            string separators = "\n";
             return separators.Contains(c);
         }
 
