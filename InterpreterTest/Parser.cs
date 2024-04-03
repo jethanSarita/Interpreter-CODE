@@ -206,12 +206,18 @@ namespace InterpreterTest
                 case TokenType.NUMBER:
                     return currToken.Value;
 
+                case TokenType.DECIMAL_NUMBER:
+                    return currToken.Value;
+
                 case TokenType.TRUE:
                 case TokenType.FALSE:
                     return currToken.Value;
 
                 case TokenType.LETTER:
                     return "" + currToken.Value + "'";
+
+                case TokenType.CONCATENATE:
+                    return currToken.Value;
 
                 default:
                     throw new InvalidOperationException($"Invalid token type in DISPLAY statement: {currToken.Type}");
