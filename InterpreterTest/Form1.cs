@@ -50,23 +50,31 @@ namespace InterpreterTest
                 return;
             }
 
-            Parser parser = new Parser(tokens);
-            ProgramNode ast = parser.Parse();
-
-            foreach (ASTNode node in ast.Statements)
+            try
             {
-                if (node is VariableDeclarationNode variableNode)
+                Parser parser = new Parser(tokens);
+                ProgramNode ast = parser.Parse();
+                lblOutput2.Text = "the parser is parsing";
+
+                foreach (ASTNode node in ast.Statements)
                 {
-                    Console.WriteLine("variableNode: " + variableNode.ToString());
+                    if (node is VariableDeclarationNode variableNode)
+                    {
+                        Console.WriteLine("variableNode: " + variableNode.ToString());
+                    }
+                    if (node is DisplayStatementNode displanyNode)
+                    {
+                        Console.WriteLine("displanyNode: " + displanyNode.ToString());
+                    }
+                    if (node is VariableAssignmentNode assignmentNode)
+                    {
+                        Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
+                    }
                 }
-                if (node is DisplayStatementNode displanyNode)
-                {
-                    Console.WriteLine("displanyNode: " + displanyNode.ToString());
-                }
-                if (node is VariableAssignmentNode assignmentNode)
-                {
-                    Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
-                }
+            }
+            catch (Exception ex)
+            {
+                lblOutput2.Text = "Parser encountered an error: " + ex.Message;
             }
 
             /*Parser parser = new Parser(tokens);
