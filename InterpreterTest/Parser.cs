@@ -236,12 +236,15 @@ namespace InterpreterTest
 
                 switch (currToken.Type)
                 {
-                    case TokenType.STRING:
-                        scans.Add(new StringLiteralNode(currToken.Value));
-                        break;
-
-                    case TokenType.NUMBER:
-                        scans.Add(new NumberLiteralNode(currToken.Value));
+                    //case TokenType.STRING:
+                    //    scans.Add(new StringLiteralNode(currToken.Value));
+                    //    break;
+                    //
+                    //case TokenType.NUMBER:
+                    //    scans.Add(new NumberLiteralNode(currToken.Value));
+                    //    break;
+                    case TokenType.IDENTIFIER:
+                        scans.Add(new ScannedIdentifierNode(currToken.Value));
                         break;
 
                     //should I add for bool    
@@ -352,6 +355,16 @@ namespace InterpreterTest
         public NumberLiteralNode(string number)
         {
             Number = number;
+        }
+    }
+
+    internal class ScannedIdentifierNode : ASTNode
+    {
+        public string varName { get; }
+
+        public ScannedIdentifierNode(string varName)
+        {
+            this.varName = varName;
         }
     }
 
