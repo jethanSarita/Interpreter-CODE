@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,16 +23,6 @@ namespace InterpreterTest
         {
             string source = tbInput.Text;
 
-            Console.WriteLine(source);
-
-            /*foreach (char c in source)
-            {
-                if (c == '\n')
-                {
-                    Console.WriteLine("found found");
-                }
-            }*/
-
             var lexer = new Lexer(source);
             List<Token> tokens = lexer.Tokenize();
 
@@ -40,9 +30,15 @@ namespace InterpreterTest
             {
                 foreach (var token in tokens)
                 {
-<<<<<<< Updated upstream
                     Console.WriteLine(token);
-=======
+                }
+            }
+            else
+            {
+                lblOutput.Text = "Lexer encountered an error.";
+                return;
+            }
+
             try
             {
                 Parser parser = new Parser(tokens);
@@ -75,65 +71,13 @@ namespace InterpreterTest
                             }*/
                         }
                     }
->>>>>>> Stashed changes
-                }
-                lblOutput.Text = "the lexer is lexing";
-            }
-            else
-            {
-                lblOutput.Text = "Lexer encountered an error.";
-                return;
-            }
-
-<<<<<<< Updated upstream
-            Parser parser = new Parser(tokens);
-            ProgramNode ast = parser.Parse();
-
-            foreach (ASTNode node in ast.Statements)
-            {
-                if (node is VariableDeclarationNode variableNode)
-                {
-                    Console.WriteLine("variableNode: " + variableNode.ToString());
-                }
-                if (node is DisplayStatementNode displanyNode)
-                {
-                    Console.WriteLine("displanyNode: " + displanyNode.ToString());
-                }
-                if (node is VariableAssignmentNode assignmentNode)
-                {
-                    Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
-                }
-            }
-=======
-            
                 }
             }
             catch (Exception ex)
             {
                 lblOutput2.Text = "Parser encountered an error: " + ex.Message;
             }
->>>>>>> Stashed changes
-
-            /*Parser parser = new Parser(tokens);
-            ASTNode ast = null;
-            try
-            {
-                ast = parser.Parse();
-                lblOutput2.Text = "the parser is parsing";
-            }
-            catch (Exception ex)
-            {
-                lblOutput2.Text = "Parser encountered an error: " + ex.Message;
-                return;
-            }
-
-            foreach (var token in tokens)
-            {
-                Console.WriteLine(token);
-            }*/
-
         }
-
         private void btnClear_Click(object sender, EventArgs e)
         {
             lblOutput.ResetText();

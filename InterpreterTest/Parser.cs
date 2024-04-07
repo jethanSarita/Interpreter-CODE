@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.XPath;
@@ -138,16 +138,6 @@ namespace InterpreterTest
 
         }
 
-        /*private ASTNode Statement()
-        {
-            if (!_insideCodeBlock)
-            {
-                throw new Exception("Statement outside CODE block.");
-            }
-            // other parsing logic for different types of statements
-            return new PlaceholderNode("PlaceholderStatement");
-        }*/
-
         private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
         {
             return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
@@ -205,14 +195,9 @@ namespace InterpreterTest
 
                 case TokenType.NUMBER:
                     return currToken.Value;
-
-<<<<<<< Updated upstream
-=======
-                /*case TokenType.TRUE:
                 case TokenType.DECIMAL_NUMBER:
                     return currToken.Value;
 
->>>>>>> Stashed changes
                 case TokenType.TRUE:
                 case TokenType.FALSE:
                     return currToken.Value;
@@ -220,16 +205,14 @@ namespace InterpreterTest
                 case TokenType.LETTER:
                     return "" + currToken.Value + "'";
 
-<<<<<<< Updated upstream
-=======
                 case TokenType.CONCATENATE:
                     return new DisplayConcatNode();
 
                 case TokenType.NEXT_LINE:
                     return new DisplayNewLineNode();
                     return currToken.Value;
-
->>>>>>> Stashed changes
+                case TokenType.CONCATENATE:
+                    return currToken.Value;
                 default:
                     throw new InvalidOperationException($"Invalid token type in DISPLAY statement: {currToken.Type}");
             }
