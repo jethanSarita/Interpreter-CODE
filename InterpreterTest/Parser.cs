@@ -206,6 +206,13 @@ namespace InterpreterTest
                 case TokenType.NUMBER:
                     return currToken.Value;
 
+<<<<<<< Updated upstream
+=======
+                /*case TokenType.TRUE:
+                case TokenType.DECIMAL_NUMBER:
+                    return currToken.Value;
+
+>>>>>>> Stashed changes
                 case TokenType.TRUE:
                 case TokenType.FALSE:
                     return currToken.Value;
@@ -213,6 +220,16 @@ namespace InterpreterTest
                 case TokenType.LETTER:
                     return "" + currToken.Value + "'";
 
+<<<<<<< Updated upstream
+=======
+                case TokenType.CONCATENATE:
+                    return new DisplayConcatNode();
+
+                case TokenType.NEXT_LINE:
+                    return new DisplayNewLineNode();
+                    return currToken.Value;
+
+>>>>>>> Stashed changes
                 default:
                     throw new InvalidOperationException($"Invalid token type in DISPLAY statement: {currToken.Type}");
             }
@@ -236,12 +253,15 @@ namespace InterpreterTest
 
                 switch (currToken.Type)
                 {
-                    case TokenType.STRING:
-                        scans.Add(new StringLiteralNode(currToken.Value));
-                        break;
-
-                    case TokenType.NUMBER:
-                        scans.Add(new NumberLiteralNode(currToken.Value));
+                    //case TokenType.STRING:
+                    //    scans.Add(new StringLiteralNode(currToken.Value));
+                    //    break;
+                    //
+                    //case TokenType.NUMBER:
+                    //    scans.Add(new NumberLiteralNode(currToken.Value));
+                    //    break;
+                    case TokenType.IDENTIFIER:
+                        scans.Add(new ScannedIdentifierNode(currToken.Value));
                         break;
 
                     //should I add for bool    
@@ -352,6 +372,16 @@ namespace InterpreterTest
         public NumberLiteralNode(string number)
         {
             Number = number;
+        }
+    }
+
+    internal class ScannedIdentifierNode : ASTNode
+    {
+        public string varName { get; }
+
+        public ScannedIdentifierNode(string varName)
+        {
+            this.varName = varName;
         }
     }
 
