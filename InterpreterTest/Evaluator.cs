@@ -36,6 +36,7 @@ namespace InterpreterTest
                     {
                         case "INT":
                             INT.Add(varName, 0);
+                            Console.WriteLine("Added " + varName + " as variable");
                             break;
                         case "FLOAT":
                             FLOAT.Add(varName, 0.0f);
@@ -47,17 +48,19 @@ namespace InterpreterTest
                             CHAR.Add(varName, '\0');
                             break;
                     }
+                    _position++;
                 }
                 else if (currNode is VariableAssignmentNode variableAssignmentNode)
                 {
+                    
                     string varName = variableAssignmentNode._varName;
                     string literal = variableAssignmentNode._literal;
                     string literalType = variableAssignmentNode._literalType;
-
                     switch (literalType)
                     {
                         case "NUMBER":
                             INT[varName] = int.Parse(literal);
+                            Console.WriteLine("Added " + literal + " to " + varName);
                             break;
                         case "LETTER":
                             CHAR[varName] = literal[0];
@@ -72,6 +75,7 @@ namespace InterpreterTest
                             FLOAT[varName] = float.Parse(literal);
                             break;
                     }
+                    _position++;
                 }
             }
             return "";
