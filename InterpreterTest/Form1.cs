@@ -55,11 +55,11 @@ namespace InterpreterTest
                     {
                         Console.WriteLine("variableNode: " + variableNode.ToString());
                     }
-                    if (node is DisplayStatementNode displanyNode)
+                    else if (node is DisplayStatementNode displanyNode)
                     {
                         Console.WriteLine("displayNode: " + displanyNode.ToString());
                     }
-                    if (node is VariableAssignmentNode assignmentNode)
+                    else if (node is VariableAssignmentNode assignmentNode)
                     {
                         Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
                     }
