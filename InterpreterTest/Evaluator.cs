@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace InterpreterTest
 {
@@ -10,15 +11,12 @@ namespace InterpreterTest
     {
         private readonly List<ASTNode> _ast;
         private int _position;
+        private SymbolStorage _symbolStorage;
 
-        private Dictionary<string, int> INT = new Dictionary<string, int>();
-        private Dictionary<string, float> FLOAT = new Dictionary<string, float>();
-        private Dictionary<string, bool> BOOL = new Dictionary<string, bool>();
-        private Dictionary<string, char> CHAR = new Dictionary<string, char>();
-
-        public Evaluator(ProgramNode ast)
+        public Evaluator(ProgramNode ast, SymbolStorage symbolStorage)
         {
             _ast = ast.Statements;
+            _symbolStorage = symbolStorage;
             _position = 0;
         }
 
@@ -36,19 +34,19 @@ namespace InterpreterTest
                     switch (dataType)
                     {
                         case "INT":
-                            INT.Add(varName, 0);
+                            _symbolStorage.INT.Add(varName, 0);
                             Console.WriteLine("Added " + varName + " as INT variable");
                             break;
                         case "FLOAT":
-                            FLOAT.Add(varName, 0.0f);
+                            _symbolStorage.FLOAT.Add(varName, 0.0f);
                             Console.WriteLine("Added " + varName + " as FLOAT variable");
                             break;
                         case "BOOL":
-                            BOOL.Add(varName, false);
+                            _symbolStorage.BOOL.Add(varName, false);
                             Console.WriteLine("Added " + varName + " as BOOL variable");
                             break;
                         case "CHAR":
-                            CHAR.Add(varName, '\0');
+                            _symbolStorage.CHAR.Add(varName, '\0');
                             Console.WriteLine("Added " + varName + " as CHAR variable");
                             break;
                     }
@@ -64,41 +62,33 @@ namespace InterpreterTest
                     {
                         case "NUMBER":
                             //string to int
-                            INT[varName] = int.Parse(literal);
+                            _symbolStorage.INT[varName] = int.Parse(literal);
                             Console.WriteLine("Added INT " + literal + " to " + varName);
                             break;
                         case "LETTER":
                             //string to char
-                            CHAR[varName] = literal[0];
+                            _symbolStorage.CHAR[varName] = literal[0];
                             Console.WriteLine("Added CHAR " + literal + " to " + varName);
                             break;
                         case "TRUE":
-                            BOOL[varName] = true;
+                            _symbolStorage.BOOL[varName] = true;
                             Console.WriteLine("Added BOOL " + literal + " to " + varName);
                             break;
                         case "FALSE":
-                            BOOL[varName] = false;
+                            _symbolStorage.BOOL[varName] = false;
                             Console.WriteLine("Added BOOL " + literal + " to " + varName);
                             break;
                         case "DECIMAL_NUMBER":
                             //string to float
-                            FLOAT[varName] = float.Parse(literal);
+                            _symbolStorage.FLOAT[varName] = float.Parse(literal);
                             Console.WriteLine("Added FLOAT " + literal + " to " + varName);
                             break;
                     }
                     _position++;
                 }
-                else if (currNode is DisplayStatementNode displayStatementNode)
+                else if (currNode is DisplayNode displayNode)
                 {
-                    
-                    List<ASTNode> dispayNodes = displayStatementNode._displayNodes;
-                    foreach (ASTNode displayNode in dispayNodes)
-                    {
-                        if (displayNode is DisplayVariableNode displayVariableNode)
-                        {
-                            result += INT[displayVariableNode._varName];
-                        }
-                    }
+                    result = displayNode.eval(_symbolStorage);
                     _position++;
                 }
             }

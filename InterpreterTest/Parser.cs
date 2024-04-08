@@ -179,8 +179,6 @@ namespace InterpreterTest
         {
             _position++;
 
-            List<ASTNode> displayNodes = new List<ASTNode>();
-
             //after DISPLAY there should be a colon ':'
             if (_tokens[_position].Type != TokenType.COLON)
             {
@@ -189,28 +187,28 @@ namespace InterpreterTest
             _position++;
 
             //parse display items until end of the line
-            while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
-            {
-                displayNodes.Add(ParseDisplayItem());
-                _position++;
-            }
+            DisplayNode displayNode = ParseDisplayItem();
+
 
             _position++;
-            return new DisplayStatementNode(displayNodes);
+            return displayNode;
         }
 
-        private ASTNode ParseDisplayItem()
+        private DisplayNode ParseDisplayItem()
         {
             Token currToken = _tokens[_position];
-
+            DisplayNode result = new DisplayVariableNode("a");
             //handle different types of display items
-            switch (currToken.Type)
+            while (currToken.Type != TokenType.LINE_SEPARATOR)
             {
-                case TokenType.IDENTIFIER:
-                    return new DisplayVariableNode(currToken.Value);
-                default:
-                    return new DisplayVariableNode("null");
+                if (currToken.Type == TokenType.IDENTIFIER)
+                {
+                    result = new DisplayVariableNode(currToken.Value);
+                }
+                _position++;
+                currToken = _tokens[_position];
             }
+            return result;
         }
 
         private ASTNode ParseScanStatement()
@@ -265,118 +263,6 @@ namespace InterpreterTest
             return new VariableAssignmentNode(variableName.Value, literal.Value, literal.Type.ToString());
         }
 
-
-    }
-
-    internal abstract class ASTNode { }
-
-    internal class ProgramNode : ASTNode
-    {
-        public List<ASTNode> Statements { get; }
-
-        public ProgramNode(List<ASTNode> statements)
-        {
-            Statements = statements;
-        }
-    }
-
-    internal class VariableDeclarationNode : ASTNode
-    {
-        public String _dataType  { get; }
-        public String _varName { get; }
-
-        public VariableDeclarationNode(string dataType, string varName)
-        {
-            _dataType = dataType;
-            _varName = varName;
-        }
-
-        public override String ToString()
-        {
-            return $"Data Type: {_dataType}, Variable Name: {_varName}";
-        }
-
-    }
-
-    internal class VariableAssignmentNode : ASTNode
-    {
-        public String _varName { get; }
-        public String _literal { get; }
-        public String _literalType { get; }
-
-        public VariableAssignmentNode(string varName, string literal , string literalType)
-        {
-            _varName = varName;
-            _literal = literal;
-            _literalType = literalType;
-        }
-
-        public override String ToString()
-        {
-            return $"Variable Name: {_varName}, Value: {_literal}, Literal Type: {_literalType}";
-        }
-
-    }
-
-    internal class DisplayStatementNode : ASTNode
-    { 
-        public readonly List<ASTNode> _displayNodes;
-
-        public DisplayStatementNode(List<ASTNode> displayNodes)
-        {
-            _displayNodes = displayNodes;
-        }
-    }
-
-    internal class DisplayVariableNode : ASTNode
-    {
-        public string _varName;
-
-        public DisplayVariableNode(string varName)
-        {
-            _varName = varName;
-        }
-    }
-
-
-    /*internal class StringLiteralNode : ASTNode
-    {
-        public string Value { get; }
-
-        public StringLiteralNode(string value)
-        {
-            Value = value;
-        }
-    }
-
-    internal class NumberLiteralNode : ASTNode
-    {
-        public string Number { get; }
-
-        public NumberLiteralNode(string number)
-        {
-            Number = number;
-        }
-    }*/
-
-    internal class ScannedIdentifierNode : ASTNode
-    {
-        public string varName { get; }
-
-        public ScannedIdentifierNode(string varName)
-        {
-            this.varName = varName;
-        }
-    }
-
-    internal class ScanStatementNode : ASTNode
-    {
-        public List<ASTNode> Scans { get; }
-
-        public ScanStatementNode(List<ASTNode> scans)
-        {
-            Scans = scans;
-        }
 
     }
 }

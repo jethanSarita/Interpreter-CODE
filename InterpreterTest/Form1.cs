@@ -20,14 +20,14 @@ namespace InterpreterTest
         // click button to see if lexer and parser are working fine
         private void button1_Click(object sender, EventArgs e)
         {
+
             string source = tbInput.Text;
 
             Console.WriteLine(source);
 
             try
             {
-
-                    var lexer = new Lexer(source);
+                var lexer = new Lexer(source);
                 List<Token> tokens = lexer.Tokenize();
 
                 if (tokens.Count > 0)
@@ -44,28 +44,30 @@ namespace InterpreterTest
                     return;
                 }
 
-            
                 Parser parser = new Parser(tokens);
                 ProgramNode ast = parser.Parse();
                 lblOutput2.Text = "the parser is parsing";
 
+                //troubleshooting
                 foreach (ASTNode node in ast.Statements)
                 {
                     if (node is VariableDeclarationNode variableNode)
                     {
                         Console.WriteLine("variableNode: " + variableNode.ToString());
                     }
-                    else if (node is DisplayStatementNode displanyNode)
+                    /*else if (node is DisplayStatementsNode displanyNode)
                     {
                         Console.WriteLine("displayNode: " + displanyNode.ToString());
-                    }
+                    }*/
                     else if (node is VariableAssignmentNode assignmentNode)
                     {
                         Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
                     }
                 }
 
-                Evaluator eval = new Evaluator(ast);
+                SymbolStorage symbolStorage = new SymbolStorage();
+
+                Evaluator eval = new Evaluator(ast, symbolStorage);
                 string result = eval.Evaluate();
                 Console.WriteLine("Result: " + result);
                 tbInput.Text = source + Environment.NewLine + Environment.NewLine + "Output: " + Environment.NewLine + result;
