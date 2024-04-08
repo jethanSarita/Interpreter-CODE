@@ -46,6 +46,7 @@ namespace InterpreterTest
                     break;
                 }
 
+                //[DataType][Identifier] + ([Comma][Identifier])* + [Equals][Literal]
                 if (
                     currentToken.Type == TokenType.INT ||
                     currentToken.Type == TokenType.CHAR ||
@@ -82,7 +83,7 @@ namespace InterpreterTest
                                 }
                                 _position++;
                             }
-                            
+
                         }
                     }
                     else
@@ -90,11 +91,38 @@ namespace InterpreterTest
                         throw new InvalidOperationException($"Invalid {currentToken.Value} declaration");
                     }
                 }
-                if (currentToken.Type == TokenType.DISPLAY)
+                //[Identifier][Equals][Literal]
+                else if (currentToken.Type == TokenType.IDENTIFIER)
+                {
+                    string idenitiferName = currentToken.Value;
+                    Token IdentifierToken = currentToken;
+                    if (Peek().Type == TokenType.EQUAL)
+                    {
+                        _position++;
+                        if (Peek().Type == TokenType.NUMBER ||
+                            Peek().Type == TokenType.LETTER ||
+                            Peek().Type == TokenType.TRUE ||
+                            Peek().Type == TokenType.FALSE ||
+                            Peek().Type == TokenType.DECIMAL_NUMBER)
+                        {
+                            statements.Add(ParseVariableAssignment(IdentifierToken, Peek()));
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Invalid {idenitiferName}(Identifier) assignment. No succeeding literal after equals sign");
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Invalid {idenitiferName}(Identifier) assignment, no succeeding equals sign");
+                    }
+                }
+                //[Display][Colon][{contents}]
+                else if (currentToken.Type == TokenType.DISPLAY)
                 {
                     statements.Add(ParseDisplayStatement());
                 }
-                if (currentToken.Type == TokenType.SCAN)
+                else if (currentToken.Type == TokenType.SCAN)
                 {
                     statements.Add(ParseScanStatement());
                 }
@@ -126,6 +154,10 @@ namespace InterpreterTest
                 else if (currTok.Type == TokenType.COMMA && commaCheck)
                 {
                     commaCheck = false;
+                    if (!(Peek().Type == TokenType.IDENTIFIER))
+                    {
+                        throw new InvalidOperationException("Invalid comma after variable name with no following variable declaration");
+                    }
                 }
                 else
                 {
@@ -137,17 +169,6 @@ namespace InterpreterTest
             return toks;
 
         }
-
-        /*private ASTNode Statement()
-        {
-            if (!_insideCodeBlock)
-            {
-                throw new Exception("Statement outside CODE block.");
-            }
-            // other parsing logic for different types of statements
-            return new PlaceholderNode("PlaceholderStatement");
-        }*/
-
         private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
         {
             return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
