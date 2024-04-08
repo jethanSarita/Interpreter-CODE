@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.XPath;
@@ -28,7 +30,7 @@ namespace InterpreterTest
         public ProgramNode Parse()
         {
             Token currentToken = _tokens[_position];
-            if (!(currentToken.Type == TokenType.BEGIN && Peek().Type == TokenType.CODE))
+            if (!(currentToken.Type == TokenType.BEGIN && Peek(1).Type == TokenType.CODE))
             {
                 throw new Exception("Expected 'BEGIN CODE'");
             }
@@ -41,7 +43,7 @@ namespace InterpreterTest
             while (_position < _tokens.Count)
             {
                 currentToken = _tokens[_position];
-                if (currentToken.Type == TokenType.END && Peek().Type == TokenType.CODE)
+                if (currentToken.Type == TokenType.END && Peek(1).Type == TokenType.CODE)
                 {
                     _insideCodeBlock = false;
                     break;
@@ -55,7 +57,7 @@ namespace InterpreterTest
                     currentToken.Type == TokenType.BOOL
                    )
                 {
-                    if (Peek().Type == TokenType.IDENTIFIER)
+                    if (Peek(1).Type == TokenType.IDENTIFIER)
                     {
                         _position++;
                         List<Token> identifiers = ReadIdentifiers();
@@ -68,11 +70,11 @@ namespace InterpreterTest
                         currentToken = _tokens[_position];
                         if (currentToken.Type == TokenType.EQUAL)
                         {
-                            if (!(Peek().Type == TokenType.NUMBER ||
-                                Peek().Type == TokenType.LETTER ||
-                                Peek().Type == TokenType.TRUE ||
-                                Peek().Type == TokenType.FALSE ||
-                                Peek().Type == TokenType.DECIMAL_NUMBER))
+                            if (!(Peek(1).Type == TokenType.NUMBER ||
+                                Peek(1).Type == TokenType.LETTER ||
+                                Peek(1).Type == TokenType.TRUE ||
+                                Peek(1).Type == TokenType.FALSE ||
+                                Peek(1).Type == TokenType.DECIMAL_NUMBER))
                             {
                                 throw new InvalidOperationException($"No literal assignment after '='");
                             }
@@ -80,7 +82,7 @@ namespace InterpreterTest
                             {
                                 foreach (var toks in identifiers)
                                 {
-                                    statements.Add(ParseVariableAssignment(toks, Peek()));
+                                    statements.Add(ParseVariableAssignment(toks, Peek(1)));
                                 }
                                 _position++;
                             }
@@ -97,16 +99,16 @@ namespace InterpreterTest
                 {
                     string idenitiferName = currentToken.Value;
                     Token IdentifierToken = currentToken;
-                    if (Peek().Type == TokenType.EQUAL)
+                    if (Peek(1).Type == TokenType.EQUAL)
                     {
                         _position++;
-                        if (Peek().Type == TokenType.NUMBER ||
-                            Peek().Type == TokenType.LETTER ||
-                            Peek().Type == TokenType.TRUE ||
-                            Peek().Type == TokenType.FALSE ||
-                            Peek().Type == TokenType.DECIMAL_NUMBER)
+                        if (Peek(1).Type == TokenType.NUMBER ||
+                            Peek(1).Type == TokenType.LETTER ||
+                            Peek(1).Type == TokenType.TRUE ||
+                            Peek(1).Type == TokenType.FALSE ||
+                            Peek(1).Type == TokenType.DECIMAL_NUMBER)
                         {
-                            statements.Add(ParseVariableAssignment(IdentifierToken, Peek()));
+                            statements.Add(ParseVariableAssignment(IdentifierToken, Peek(1)));
                         }
                         else
                         {
@@ -132,9 +134,17 @@ namespace InterpreterTest
             return new ProgramNode(statements);
         }
 
-        private Token Peek()
+        private Token Peek(int numOfJumps)
         {
-            return _tokens[_position + 1];
+            int total = _position + numOfJumps;
+            if (total < _tokens.Count)
+            {
+                return _tokens[_position + numOfJumps];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private List<Token> ReadIdentifiers()
@@ -155,7 +165,7 @@ namespace InterpreterTest
                 else if (currTok.Type == TokenType.COMMA && commaCheck)
                 {
                     commaCheck = false;
-                    if (!(Peek().Type == TokenType.IDENTIFIER))
+                    if (!(Peek(1).Type == TokenType.IDENTIFIER))
                     {
                         throw new InvalidOperationException("Invalid comma after variable name with no following variable declaration");
                     }
@@ -197,18 +207,78 @@ namespace InterpreterTest
         private DisplayNode ParseDisplayItem()
         {
             Token currToken = _tokens[_position];
-            DisplayNode result = new DisplayVariableNode("a");
+            bool concatLock = true;
+            DisplayNode result = new DisplayVariableNode("null");
             //handle different types of display items
             while (currToken.Type != TokenType.LINE_SEPARATOR)
             {
-                if (currToken.Type == TokenType.IDENTIFIER)
+                if (CheckIfDisplayable(currToken) && concatLock)
                 {
-                    result = new DisplayVariableNode(currToken.Value);
+                    if (Peek(1).Type == TokenType.CONCATENATE)
+                    {
+                        if (CheckIfDisplayable(Peek(2)))
+                        {
+                            result = new DisplayConcatNode(PraseDisplayable(currToken), PraseDisplayable(Peek(2)));
+                            _position++;
+                            _position++;
+                            concatLock = false;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Expected data after concatenation at Display");
+                        }
+                    }
+                    else
+                    {
+                        result = new DisplayVariableNode(currToken.Value);
+                    }
+                }
+                else if (currToken.Type == TokenType.CONCATENATE && !concatLock)
+                {
+                    if (CheckIfDisplayable(Peek(1)))
+                    {
+                        result = new DisplayConcatNode(result, PraseDisplayable(Peek(1)));
+                        _position++;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"{Peek(1).Value} in display is invalid");
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"{currToken.Value} in display is invalid");
                 }
                 _position++;
                 currToken = _tokens[_position];
             }
+            Console.WriteLine(result);
             return result;
+        }
+
+        private DisplayNode PraseDisplayable(Token token)
+        {
+            if (token.Type == TokenType.IDENTIFIER)
+            {
+                return new DisplayVariableNode(token.Value);
+            }
+            //add more NEXT_LINE, LETTER, and STRING
+            return null;
+        }
+
+        private bool CheckIfDisplayable(Token token)
+        {
+            if (token.Type == TokenType.IDENTIFIER ||
+                token.Type == TokenType.NEXT_LINE ||
+                token.Type == TokenType.LETTER ||
+                token.Type == TokenType.STRING)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private ASTNode ParseScanStatement()

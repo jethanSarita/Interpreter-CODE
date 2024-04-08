@@ -36,7 +36,7 @@ namespace InterpreterTest
             COMMA,          // ,
 
             COLON,          // :
-            NEXT_LINE,       // $
+            NEXT_LINE,      // $
             //One or two character tokens
             NOT_EQUAL,      // <>
             EQUAL_EQUAL,    // ==

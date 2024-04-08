@@ -20,7 +20,6 @@ namespace InterpreterTest
         // click button to see if lexer and parser are working fine
         private void button1_Click(object sender, EventArgs e)
         {
-
             string source = tbInput.Text;
 
             Console.WriteLine(source);
@@ -55,10 +54,10 @@ namespace InterpreterTest
                     {
                         Console.WriteLine("variableNode: " + variableNode.ToString());
                     }
-                    /*else if (node is DisplayStatementsNode displanyNode)
+                    else if (node is DisplayNode displanyNode)
                     {
                         Console.WriteLine("displayNode: " + displanyNode.ToString());
-                    }*/
+                    }
                     else if (node is VariableAssignmentNode assignmentNode)
                     {
                         Console.WriteLine("assignmentNode: " + assignmentNode.ToString());

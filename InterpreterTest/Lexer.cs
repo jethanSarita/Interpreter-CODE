@@ -232,7 +232,7 @@ namespace InterpreterTest
                     tokens.Add(ReadStringLiteral());
                     //_position++;
                 }
-                else if (currentChar == '\'' || currentChar == '[' || currentChar == ']')
+                else if (currentChar == '[' || currentChar == ']')
                 {
                     tokens.Add(ReadCharLiteral());
                     //_position++;

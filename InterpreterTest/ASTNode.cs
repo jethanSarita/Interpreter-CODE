@@ -75,6 +75,8 @@ namespace InterpreterTest
 
         public override string eval(SymbolStorage symbolStorage)
         {
+            string check = _left.eval(symbolStorage) + _right.eval(symbolStorage);
+            Console.WriteLine("------------------" + check);
             return _left.eval(symbolStorage) + _right.eval(symbolStorage);
         }
     }

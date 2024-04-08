@@ -88,6 +88,7 @@ namespace InterpreterTest
                 }
                 else if (currNode is DisplayNode displayNode)
                 {
+                    Console.WriteLine(displayNode);
                     result = displayNode.eval(_symbolStorage);
                     _position++;
                 }

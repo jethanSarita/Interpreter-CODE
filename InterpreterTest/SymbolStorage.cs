@@ -23,7 +23,6 @@ namespace InterpreterTest
 
         internal string findVariable(string varName)
         {
-            Console.WriteLine("varName: " + varName);
             string result = "";
             if(INT.ContainsKey(varName))
             {
