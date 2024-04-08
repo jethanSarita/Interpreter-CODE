@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -100,16 +101,21 @@ namespace InterpreterTest
                         tokens.Add(new Token(Token.TokenType.IDENTIFIER, data));
                     }
                 }
+                //Check if digit
                 else if (char.IsDigit(currentChar))
                 {
                     string number = ReadWhile(c => char.IsDigit(c) || c == '.');
-                    if (float.TryParse(number, out float result))
+                    if (int.TryParse(number, out int intVal))
+                    {
+                        tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                    }
+                    else if (float.TryParse(number, out float floatVal))
                     {
                         tokens.Add(new Token(Token.TokenType.DECIMAL_NUMBER, number));
                     }
                     else
                     {
-                        tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                        throw new InvalidOperationException($"{number} is not a valid number literal");
                     }
                     //_position++;
                 }
