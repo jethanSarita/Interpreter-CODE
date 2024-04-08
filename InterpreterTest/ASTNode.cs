@@ -95,6 +95,20 @@ namespace InterpreterTest
         }
     }
 
+    internal class DisplayStringNode : DisplayNode
+    {
+        public string _value;
+
+        public DisplayStringNode(string value)
+        {
+            _value = value;
+        }
+        public override string eval(SymbolStorage symbolStorage)
+        {
+            return _value;
+        }
+    }
+
     /*internal class DisplayStatementsNode : DisplayNode
     {
         public readonly List<DisplayNode> _displayNodes;

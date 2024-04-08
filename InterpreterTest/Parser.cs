@@ -76,7 +76,7 @@ namespace InterpreterTest
                                 Peek(1).Type == TokenType.FALSE ||
                                 Peek(1).Type == TokenType.DECIMAL_NUMBER))
                             {
-                                throw new InvalidOperationException($"No literal assignment after '='");
+                                throw new InvalidOperationException($"{UnPeek(1).Value} = {Peek(1).Value} is not a valid assignment");
                             }
                             else
                             {
@@ -140,6 +140,19 @@ namespace InterpreterTest
             if (total < _tokens.Count)
             {
                 return _tokens[_position + numOfJumps];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Token UnPeek(int numOfBackFlips)
+        {
+            int total = _position - numOfBackFlips;
+            if (total < _tokens.Count && total >= 0)
+            {
+                return _tokens[_position - numOfBackFlips];
             }
             else
             {
@@ -261,6 +274,18 @@ namespace InterpreterTest
             if (token.Type == TokenType.IDENTIFIER)
             {
                 return new DisplayVariableNode(token.Value);
+            }
+            else if (token.Type == TokenType.NEXT_LINE)
+            {
+                return new DisplayStringNode(Environment.NewLine);
+            }
+            else if (token.Type == TokenType.LETTER)
+            {
+                return new DisplayStringNode(token.Value);
+            }
+            else if (token.Type == TokenType.STRING)
+            {
+                return new DisplayStringNode(token.Value);
             }
             //add more NEXT_LINE, LETTER, and STRING
             return null;

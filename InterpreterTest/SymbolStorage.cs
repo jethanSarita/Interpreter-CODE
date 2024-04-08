@@ -33,7 +33,14 @@ namespace InterpreterTest
             }
             else if (BOOL.ContainsKey(varName))
             {
-                result += BOOL[varName];
+                if (BOOL[varName])
+                {
+                    result += "TRUE";
+                }
+                else
+                {
+                    result += "FALSE";
+                }
             }
             else if (CHAR.ContainsKey(varName))
             {

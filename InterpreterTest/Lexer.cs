@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Design;
 using System.Linq;
 using System.Text;
@@ -229,10 +230,22 @@ namespace InterpreterTest
                 }
                 else if (currentChar == '"')
                 {
-                    tokens.Add(ReadStringLiteral());
+                    Token toks = ReadStringLiteral();
+                    if (toks.Value == "TRUE")
+                    {
+                        tokens.Add(new Token(Token.TokenType.TRUE, "TRUE"));
+                    }
+                    else if (toks.Value == "FALSE")
+                    {
+                        tokens.Add(new Token(Token.TokenType.FALSE, "FALSE"));
+                    }
+                    else
+                    {
+                        tokens.Add(toks);
+                    }
                     //_position++;
                 }
-                else if (currentChar == '[' || currentChar == ']')
+                else if (currentChar == '\'' || currentChar == '[' || currentChar == ']')
                 {
                     tokens.Add(ReadCharLiteral());
                     //_position++;
@@ -292,6 +305,7 @@ namespace InterpreterTest
         {
             return char.IsLetterOrDigit(c) || c == '_';
         }
+
         private Token ReadStringLiteral()
         {
             char quote = _source[_position];
