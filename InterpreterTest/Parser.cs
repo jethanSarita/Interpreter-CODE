@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.XPath;
 using static InterpreterTest.Token;
 
@@ -178,6 +179,8 @@ namespace InterpreterTest
         {
             _position++;
 
+            List<ASTNode> displayNodes = new List<ASTNode>();
+
             //after DISPLAY there should be a colon ':'
             if (_tokens[_position].Type != TokenType.COLON)
             {
@@ -186,32 +189,17 @@ namespace InterpreterTest
             _position++;
 
             //parse display items until end of the line
-            List<string> displayItems = new List<string>();
             while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
             {
-                string displayItem = ParseDisplayItem();
-                displayItems.Add(displayItem);
-
-                //check if more items to display pa
-                if (_position < _tokens.Count - 1 && _tokens[_position + 1].Type == TokenType.CONCATENATE)
-                {
-                    _position++;
-
-                    //parse the next display item
-                    displayItem = ParseDisplayItem();
-                    displayItems.Add(displayItem);
-                }
-                else
-                {
-                    break;
-                }
+                displayNodes.Add(ParseDisplayItem());
+                _position++;
             }
 
             _position++;
-            return new DisplayStatementNode(string.Join("", displayItems));
+            return new DisplayStatementNode(displayNodes);
         }
 
-        private string ParseDisplayItem()
+        private ASTNode ParseDisplayItem()
         {
             Token currToken = _tokens[_position];
 
@@ -219,29 +207,9 @@ namespace InterpreterTest
             switch (currToken.Type)
             {
                 case TokenType.IDENTIFIER:
-                    return currToken.Value;
-
-                case TokenType.STRING:
-                    return currToken.Value;
-
-                case TokenType.NUMBER:
-                    return currToken.Value;
-
-                case TokenType.DECIMAL_NUMBER:
-                    return currToken.Value;
-
-                case TokenType.TRUE:
-                case TokenType.FALSE:
-                    return currToken.Value;
-
-                case TokenType.LETTER:
-                    return "" + currToken.Value + "'";
-
-                case TokenType.CONCATENATE:
-                    return currToken.Value;
-
+                    return new DisplayVariableNode(currToken.Value);
                 default:
-                    throw new InvalidOperationException($"Invalid token type in DISPLAY statement: {currToken.Type}");
+                    return new DisplayVariableNode("null");
             }
         }
 
@@ -351,21 +319,27 @@ namespace InterpreterTest
     }
 
     internal class DisplayStatementNode : ASTNode
-    {
-        public string Identifier { get; }
+    { 
+        public readonly List<ASTNode> _displayNodes;
 
-        public DisplayStatementNode(string identifier)
+        public DisplayStatementNode(List<ASTNode> displayNodes)
         {
-            Identifier = identifier;
-        }
-
-        public override string ToString()
-        {
-            return Identifier;
+            _displayNodes = displayNodes;
         }
     }
 
-    internal class StringLiteralNode : ASTNode
+    internal class DisplayVariableNode : ASTNode
+    {
+        public string _varName;
+
+        public DisplayVariableNode(string varName)
+        {
+            _varName = varName;
+        }
+    }
+
+
+    /*internal class StringLiteralNode : ASTNode
     {
         public string Value { get; }
 
@@ -383,7 +357,7 @@ namespace InterpreterTest
         {
             Number = number;
         }
-    }
+    }*/
 
     internal class ScannedIdentifierNode : ASTNode
     {
