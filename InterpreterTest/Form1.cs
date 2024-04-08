@@ -66,8 +66,9 @@ namespace InterpreterTest
                 }
 
                 Evaluator eval = new Evaluator(ast);
-                string test = eval.Evaluate();
-                
+                string result = eval.Evaluate();
+                Console.WriteLine("Result: " + result);
+                tbInput.Text = source + Environment.NewLine + Environment.NewLine + "Output: " + Environment.NewLine + result;
             }
             catch (Exception ex)
             {
