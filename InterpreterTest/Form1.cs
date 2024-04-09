@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace InterpreterTest
 {
@@ -69,11 +70,11 @@ namespace InterpreterTest
                 Evaluator eval = new Evaluator(ast, symbolStorage);
                 string result = eval.Evaluate();
                 Console.WriteLine("Result: " + result);
-                tbInput.Text = source + Environment.NewLine + Environment.NewLine + "Output: " + Environment.NewLine + result;
+                tbOutput.RichTextBox.Text = result;
             }
             catch (Exception ex)
             {
-                tbInput.Text = "Encountered an error:" + Environment.NewLine + ex.Message;
+                tbOutput.RichTextBox.Text = "Encountered an error:" + Environment.NewLine + ex.Message;
             }
         }
 
@@ -92,6 +93,20 @@ namespace InterpreterTest
         private void lblOutput2_Click(object sender, EventArgs e)
         {
             //dont change
+        }
+
+        private void tbInput_TextChanged(object sender, EventArgs e)
+        {
+            //dont change
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            tbOutput.RichTextBox.BackColor = ColorTranslator.FromHtml("#222E33");
+            tbOutput.RichTextBox.ForeColor = Color.White;
+            tbOutput.RichTextBox.Font = new Font("Tahoma", 12, FontStyle.Regular);
+            tbOutput.RichTextBox.BorderStyle = BorderStyle.None;
+            tbOutput.BorderStyle = BorderStyle.None;
         }
     }
 }

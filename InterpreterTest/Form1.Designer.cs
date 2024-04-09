@@ -28,31 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tbInput = new System.Windows.Forms.TextBox();
             this.btnRun = new System.Windows.Forms.Button();
             this.lblOutput = new System.Windows.Forms.Label();
             this.lblOutput2 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
+            this.tbOutput = new InterpreterTest.LineNumberRTB();
+            this.tbInput = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // tbInput
-            // 
-            this.tbInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.tbInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.tbInput.ForeColor = System.Drawing.Color.White;
-            this.tbInput.Location = new System.Drawing.Point(18, 20);
-            this.tbInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.tbInput.Multiline = true;
-            this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(848, 628);
-            this.tbInput.TabIndex = 0;
             // 
             // btnRun
             // 
             this.btnRun.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRun.ForeColor = System.Drawing.Color.Black;
             this.btnRun.Location = new System.Drawing.Point(878, 20);
-            this.btnRun.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRun.Margin = new System.Windows.Forms.Padding(4);
             this.btnRun.Name = "btnRun";
             this.btnRun.Size = new System.Drawing.Size(102, 60);
             this.btnRun.TabIndex = 1;
@@ -89,7 +78,7 @@
             this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClear.ForeColor = System.Drawing.Color.Black;
             this.btnClear.Location = new System.Drawing.Point(878, 88);
-            this.btnClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnClear.Margin = new System.Windows.Forms.Padding(4);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(102, 60);
             this.btnClear.TabIndex = 4;
@@ -97,11 +86,35 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // tbOutput
+            // 
+            this.tbOutput.BackColor = System.Drawing.SystemColors.Window;
+            this.tbOutput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tbOutput.Location = new System.Drawing.Point(18, 460);
+            this.tbOutput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.Size = new System.Drawing.Size(848, 187);
+            this.tbOutput.TabIndex = 5;
+            // 
+            // tbInput
+            // 
+            this.tbInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.tbInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.tbInput.ForeColor = System.Drawing.Color.White;
+            this.tbInput.Location = new System.Drawing.Point(18, 20);
+            this.tbInput.Margin = new System.Windows.Forms.Padding(4);
+            this.tbInput.Multiline = true;
+            this.tbInput.Name = "tbInput";
+            this.tbInput.Size = new System.Drawing.Size(848, 431);
+            this.tbInput.TabIndex = 0;
+            this.tbInput.TextChanged += new System.EventHandler(this.tbInput_TextChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 661);
+            this.Controls.Add(this.tbOutput);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblOutput2);
             this.Controls.Add(this.lblOutput);
@@ -109,21 +122,22 @@
             this.Controls.Add(this.tbInput);
             this.Font = new System.Drawing.Font("Cascadia Code", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox tbInput;
         private System.Windows.Forms.Button btnRun;
         private System.Windows.Forms.Label lblOutput;
         private System.Windows.Forms.Label lblOutput2;
         private System.Windows.Forms.Button btnClear;
+        private LineNumberRTB tbOutput;
+        private System.Windows.Forms.TextBox tbInput;
     }
 }
 
