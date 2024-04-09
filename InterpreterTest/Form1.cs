@@ -37,6 +37,7 @@ namespace InterpreterTest
                         Console.WriteLine(token);
                     }
                     lblOutput.Text = "the lexer is lexing";
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.Coconut;
                 }
                 else
                 {
@@ -74,6 +75,7 @@ namespace InterpreterTest
             }
             catch (Exception ex)
             {
+                pictureBox1.Image = InterpreterTest.Properties.Resources.Papaya;
                 tbOutput.RichTextBox.Text = "Encountered an error:" + Environment.NewLine + ex.Message;
             }
         }
@@ -113,6 +115,36 @@ namespace InterpreterTest
             tbOutput.RichTextBox.Font = new Font("Tahoma", 12, FontStyle.Regular);
             tbOutput.RichTextBox.BorderStyle = BorderStyle.None;
             tbOutput.BorderStyle = BorderStyle.None;
+        }
+
+        bool secretButtonPressed = false;
+        bool secretButtonPressed2 = false;
+
+        private void secretButton_Click(object sender, EventArgs e)
+        {
+            if (!secretButtonPressed)
+            {
+                if (secretButtonPressed2)
+                {
+                    System.Windows.Forms.MessageBox.Show("Visualizer is backkk \\o/");
+                    secretButtonPressed = true;
+                    pictureBox1.Visible = true;
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("You found the secret code error visualizer! yayy");
+                    secretButtonPressed = true;
+                    pictureBox1.Visible = true;
+                }
+            }
+            else
+            {
+                System.Windows.Forms.MessageBox.Show("T_T okay no more visualizer");
+                secretButtonPressed = false;
+                secretButtonPressed2 = true;
+                pictureBox1.Visible = false;
+            }
+            
         }
     }
 }

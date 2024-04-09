@@ -30,7 +30,7 @@ namespace InterpreterTest
         public ProgramNode Parse()
         {
             Token currentToken = _tokens[_position];
-            if (!(currentToken.Type == TokenType.BEGIN && Peek(1).Type == TokenType.CODE))
+            if (!(Peek(1) != null && currentToken.Type == TokenType.BEGIN && Peek(1).Type == TokenType.CODE))
             {
                 throw new Exception("Expected 'BEGIN CODE'");
             }
@@ -43,7 +43,7 @@ namespace InterpreterTest
             while (_position < _tokens.Count)
             {
                 currentToken = _tokens[_position];
-                if (currentToken.Type == TokenType.END && Peek(1).Type == TokenType.CODE)
+                if (Peek(1) != null && currentToken.Type == TokenType.END && Peek(1).Type == TokenType.CODE)
                 {
                     _insideCodeBlock = false;
                     break;
@@ -57,7 +57,7 @@ namespace InterpreterTest
                     currentToken.Type == TokenType.BOOL
                    )
                 {
-                    if (Peek(1).Type == TokenType.IDENTIFIER)
+                    if (Peek(1) != null && Peek(1).Type == TokenType.IDENTIFIER)
                     {
                         _position++;
                         List<Token> identifiers = ReadIdentifiers();
@@ -70,7 +70,8 @@ namespace InterpreterTest
                         currentToken = _tokens[_position];
                         if (currentToken.Type == TokenType.EQUAL)
                         {
-                            if (!(Peek(1).Type == TokenType.NUMBER ||
+                            if (!(Peek(1) != null &&
+                                Peek(1).Type == TokenType.NUMBER ||
                                 Peek(1).Type == TokenType.LETTER ||
                                 Peek(1).Type == TokenType.TRUE ||
                                 Peek(1).Type == TokenType.FALSE ||
@@ -99,10 +100,11 @@ namespace InterpreterTest
                 {
                     string idenitiferName = currentToken.Value;
                     Token IdentifierToken = currentToken;
-                    if (Peek(1).Type == TokenType.EQUAL)
+                    if (Peek(1) != null && Peek(1).Type == TokenType.EQUAL)
                     {
                         _position++;
-                        if (Peek(1).Type == TokenType.NUMBER ||
+                        if (Peek(1) != null && 
+                            Peek(1).Type == TokenType.NUMBER ||
                             Peek(1).Type == TokenType.LETTER ||
                             Peek(1).Type == TokenType.TRUE ||
                             Peek(1).Type == TokenType.FALSE ||
@@ -178,7 +180,7 @@ namespace InterpreterTest
                 else if (currTok.Type == TokenType.COMMA && commaCheck)
                 {
                     commaCheck = false;
-                    if (!(Peek(1).Type == TokenType.IDENTIFIER))
+                    if (!(Peek(1) != null && Peek(1).Type == TokenType.IDENTIFIER))
                     {
                         throw new InvalidOperationException("Invalid comma after variable name with no following variable declaration");
                     }
@@ -227,9 +229,9 @@ namespace InterpreterTest
             {
                 if (CheckIfDisplayable(currToken) && concatLock)
                 {
-                    if (Peek(1).Type == TokenType.CONCATENATE)
+                    if (Peek(1) != null && Peek(1).Type == TokenType.CONCATENATE)
                     {
-                        if (CheckIfDisplayable(Peek(2)))
+                        if (Peek(2) != null && CheckIfDisplayable(Peek(2)))
                         {
                             result = new DisplayConcatNode(PraseDisplayable(currToken), PraseDisplayable(Peek(2)));
                             _position++;
@@ -248,7 +250,7 @@ namespace InterpreterTest
                 }
                 else if (currToken.Type == TokenType.CONCATENATE && !concatLock)
                 {
-                    if (CheckIfDisplayable(Peek(1)))
+                    if (Peek(1) != null && CheckIfDisplayable(Peek(1)))
                     {
                         result = new DisplayConcatNode(result, PraseDisplayable(Peek(1)));
                         _position++;

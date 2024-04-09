@@ -32,8 +32,11 @@
             this.lblOutput = new System.Windows.Forms.Label();
             this.lblOutput2 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.tbOutput = new InterpreterTest.LineNumberRTB();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tbInput = new InterpreterTest.LineNumberRTB();
+            this.tbOutput = new InterpreterTest.LineNumberRTB();
+            this.secretButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnRun
@@ -86,15 +89,16 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // tbOutput
+            // pictureBox1
             // 
-            this.tbOutput.BackColor = System.Drawing.SystemColors.Window;
-            this.tbOutput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.tbOutput.Location = new System.Drawing.Point(18, 460);
-            this.tbOutput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tbOutput.Name = "tbOutput";
-            this.tbOutput.Size = new System.Drawing.Size(848, 187);
-            this.tbOutput.TabIndex = 5;
+            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Coconut;
+            this.pictureBox1.Location = new System.Drawing.Point(878, 155);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(394, 295);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // tbInput
             // 
@@ -106,11 +110,32 @@
             this.tbInput.Size = new System.Drawing.Size(848, 430);
             this.tbInput.TabIndex = 6;
             // 
+            // tbOutput
+            // 
+            this.tbOutput.BackColor = System.Drawing.SystemColors.Window;
+            this.tbOutput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tbOutput.Location = new System.Drawing.Point(18, 460);
+            this.tbOutput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.Size = new System.Drawing.Size(848, 187);
+            this.tbOutput.TabIndex = 5;
+            // 
+            // secretButton
+            // 
+            this.secretButton.Location = new System.Drawing.Point(1250, 20);
+            this.secretButton.Name = "secretButton";
+            this.secretButton.Size = new System.Drawing.Size(22, 22);
+            this.secretButton.TabIndex = 8;
+            this.secretButton.UseVisualStyleBackColor = true;
+            this.secretButton.Click += new System.EventHandler(this.secretButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 661);
+            this.Controls.Add(this.secretButton);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.tbInput);
             this.Controls.Add(this.tbOutput);
             this.Controls.Add(this.btnClear);
@@ -123,6 +148,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -135,6 +161,8 @@
         private System.Windows.Forms.Button btnClear;
         private LineNumberRTB tbOutput;
         private LineNumberRTB tbInput;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button secretButton;
     }
 }
 
