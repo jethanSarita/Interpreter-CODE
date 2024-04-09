@@ -13,6 +13,7 @@ namespace InterpreterTest
     {
         private readonly List<Token> _tokens;
         private int _position;
+        private int _lineCounter;
 
         private readonly string[] _keywords = {
             "INT", "BOOL", "CHAR", "FLOAT", "FALSE", "TRUE", "BEGIN", "END",
@@ -25,6 +26,7 @@ namespace InterpreterTest
         {
             _tokens = tokens;
             _position = 0;
+            _lineCounter = 1;
         }
 
         public ProgramNode Parse()
@@ -32,7 +34,7 @@ namespace InterpreterTest
             Token currentToken = _tokens[_position];
             if (!(Peek(1) != null && currentToken.Type == TokenType.BEGIN && Peek(1).Type == TokenType.CODE))
             {
-                throw new Exception("Expected 'BEGIN CODE'");
+                throw new Exception($"Error at line {_lineCounter}: Expected 'BEGIN CODE'");
             }
 
             _position++;
@@ -77,7 +79,7 @@ namespace InterpreterTest
                                 Peek(1).Type == TokenType.FALSE ||
                                 Peek(1).Type == TokenType.DECIMAL_NUMBER))
                             {
-                                throw new InvalidOperationException($"{UnPeek(1).Value} = {Peek(1).Value} is not a valid assignment");
+                                throw new InvalidOperationException($"Error at line {_lineCounter}: {UnPeek(1).Value} = {Peek(1).Value} is not a valid assignment");
                             }
                             else
                             {
@@ -92,7 +94,7 @@ namespace InterpreterTest
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Invalid {currentToken.Value} declaration");
+                        throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid {currentToken.Value} declaration");
                     }
                 }
                 //[Identifier][Equals][Literal]
@@ -114,12 +116,12 @@ namespace InterpreterTest
                         }
                         else
                         {
-                            throw new InvalidOperationException($"Invalid {idenitiferName}(Identifier) assignment. No succeeding literal after equals sign");
+                            throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid {idenitiferName}(Identifier) assignment. No succeeding literal after equals sign");
                         }
                     }
                     else
                     {
-                        throw new InvalidOperationException($"Invalid {idenitiferName}(Identifier) assignment, no succeeding equals sign");
+                        throw new InvalidOperationException($"Error at line  {_lineCounter} : Invalid {idenitiferName}(Identifier) assignment, no succeeding equals sign");
                     }
                 }
                 //[Display][Colon][{contents}]
@@ -130,8 +132,16 @@ namespace InterpreterTest
                 else if (currentToken.Type == TokenType.SCAN)
                 {
                     statements.Add(ParseScanStatement());
+                }             
+                else if (currentToken.Type == TokenType.LINE_SEPARATOR)
+                {
+                    _lineCounter++;
                 }
                 _position++;
+            }            
+            if(_insideCodeBlock)
+            {
+                throw new Exception($"Error at line {_lineCounter}: Expected 'END CODE'");
             }
             return new ProgramNode(statements);
         }
@@ -182,7 +192,7 @@ namespace InterpreterTest
                     commaCheck = false;
                     if (!(Peek(1) != null && Peek(1).Type == TokenType.IDENTIFIER))
                     {
-                        throw new InvalidOperationException("Invalid comma after variable name with no following variable declaration");
+                        throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid comma after variable name with no following variable declaration");
                     }
                 }
                 else
@@ -207,7 +217,7 @@ namespace InterpreterTest
             //after DISPLAY there should be a colon ':'
             if (_tokens[_position].Type != TokenType.COLON)
             {
-                throw new InvalidOperationException("Expected ':' after DISPLAY statement");
+                throw new InvalidOperationException($"Error at line {_lineCounter}: Expected ':' after DISPLAY statement");
             }
             _position++;
 
@@ -240,7 +250,7 @@ namespace InterpreterTest
                         }
                         else
                         {
-                            throw new InvalidOperationException("Expected data after concatenation at Display");
+                            throw new InvalidOperationException($"Error at line {_lineCounter}: Expected data after concatenation at Display");
                         }
                     }
                     else
@@ -257,14 +267,15 @@ namespace InterpreterTest
                     }
                     else
                     {
-                        throw new InvalidOperationException($"{Peek(1).Value} in display is invalid");
+                        throw new InvalidOperationException($"Error at line {_lineCounter}: {Peek(1).Value} in display is invalid");
                     }
                 }
                 else
                 {
-                    throw new InvalidOperationException($"{currToken.Value} in display is invalid");
+                    throw new InvalidOperationException($"Error at line {_lineCounter}: {currToken.Value} in display is invalid");
                 }
                 _position++;
+              
                 if (_position < _tokens.Count)
                 {
                     currToken = _tokens[_position];
@@ -318,7 +329,7 @@ namespace InterpreterTest
             //there should be colon after SCAN
             if (_tokens[_position].Type != TokenType.COLON)
             {
-                throw new InvalidOperationException("Expected ':' after SCAN statement");
+                throw new InvalidOperationException($"Error at line {_lineCounter}: Expected ':' after SCAN statement");
             }
             _position++;
 
@@ -343,7 +354,7 @@ namespace InterpreterTest
                     //should I add for bool    
 
                     default:
-                        throw new InvalidOperationException("Invalid token in SCAN statement");
+                        throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid token in SCAN statement");
                 }
 
                 _position++;
