@@ -98,6 +98,9 @@
   <ItemGroup>
     <None Include="Documentation\Coconut.jpg" />
     <None Include="Documentation\Papaya.jpg" />
+    <None Include="Documentation\HM.jpg" />
+    <None Include="Documentation\Sleep.jpg" />
+    <None Include="Documentation\wuvv.jpg" />
     <Content Include="Sample Codes\SampleCode1.txt" />
   </ItemGroup>
   <ItemGroup />

@@ -32,10 +32,10 @@
             this.lblOutput = new System.Windows.Forms.Label();
             this.lblOutput2 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.secretButton = new System.Windows.Forms.Button();
             this.tbInput = new InterpreterTest.LineNumberRTB();
             this.tbOutput = new InterpreterTest.LineNumberRTB();
-            this.secretButton = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -89,16 +89,14 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // pictureBox1
+            // secretButton
             // 
-            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Coconut;
-            this.pictureBox1.Location = new System.Drawing.Point(878, 155);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(394, 295);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
+            this.secretButton.Location = new System.Drawing.Point(1250, 20);
+            this.secretButton.Name = "secretButton";
+            this.secretButton.Size = new System.Drawing.Size(22, 22);
+            this.secretButton.TabIndex = 8;
+            this.secretButton.UseVisualStyleBackColor = true;
+            this.secretButton.Click += new System.EventHandler(this.secretButton_Click);
             // 
             // tbInput
             // 
@@ -120,14 +118,16 @@
             this.tbOutput.Size = new System.Drawing.Size(848, 187);
             this.tbOutput.TabIndex = 5;
             // 
-            // secretButton
+            // pictureBox1
             // 
-            this.secretButton.Location = new System.Drawing.Point(1250, 20);
-            this.secretButton.Name = "secretButton";
-            this.secretButton.Size = new System.Drawing.Size(22, 22);
-            this.secretButton.TabIndex = 8;
-            this.secretButton.UseVisualStyleBackColor = true;
-            this.secretButton.Click += new System.EventHandler(this.secretButton_Click);
+            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Sleep;
+            this.pictureBox1.Location = new System.Drawing.Point(878, 155);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(394, 295);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // Form1
             // 

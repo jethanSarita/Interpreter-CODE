@@ -52,5 +52,27 @@ namespace InterpreterTest
             }
             return result;
         }
+
+        public bool CheckVariable(string varName)
+        {
+            bool result = false;
+            if (INT.ContainsKey(varName))
+            {
+                result = true;
+            }
+            else if (FLOAT.ContainsKey(varName))
+            {
+                result = true;
+            }
+            else if (BOOL.ContainsKey(varName))
+            {
+                result = true;
+            }
+            else if (CHAR.ContainsKey(varName))
+            {
+                result = true;
+            }
+            return result;
+        }
     }
 }

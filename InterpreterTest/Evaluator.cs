@@ -58,6 +58,12 @@ namespace InterpreterTest
                     string varName = variableAssignmentNode._varName;
                     string literal = variableAssignmentNode._literal;
                     string literalType = variableAssignmentNode._literalType;
+
+                    if (!(_symbolStorage.CheckVariable(varName)))
+                    {
+                        throw new InvalidOperationException($"Variable: '{varName}' doesn't exist");
+                    }
+
                     switch (literalType)
                     {
                         case "NUMBER":
