@@ -73,10 +73,23 @@ namespace InterpreterTest
                 Console.WriteLine("Result: " + result);
                 tbOutput.RichTextBox.Text = result;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                string text = "";
+                if (exception is StackOverflowException ashh)
+                {
+                    text += ashh.Message;
+                }
+                else
+                {
+                    text += "Encountered an error:" + Environment.NewLine;
+                    text += exception.Message;
+                }
+
+                tbOutput.RichTextBox.Text = text;
+
                 pictureBox1.Image = InterpreterTest.Properties.Resources.Papaya;
-                tbOutput.RichTextBox.Text = "Encountered an error:" + Environment.NewLine + ex.Message;
+                
             }
         }
 
