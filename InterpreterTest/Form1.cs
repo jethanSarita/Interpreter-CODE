@@ -82,7 +82,8 @@ namespace InterpreterTest
                 string text = "";
                 if (exception is StackOverflowException ashh)
                 {
-                    text += ashh.Message;
+                    text += ashh.Message + Environment.NewLine + "-Jethan";
+
                     pictureBox1.Visible = true;
                     secretButtonPressed = true;
                     pictureBox1.Image = InterpreterTest.Properties.Resources.wuvv;
