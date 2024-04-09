@@ -13,6 +13,10 @@ namespace InterpreterTest
 {
     public partial class Form1 : Form
     {
+
+        bool secretButtonPressed = false;
+        bool secretButtonPressed2 = false;
+
         public Form1()
         {
             InitializeComponent();
@@ -37,7 +41,7 @@ namespace InterpreterTest
                         Console.WriteLine(token);
                     }
                     lblOutput.Text = "the lexer is lexing";
-                    pictureBox1.Image = InterpreterTest.Properties.Resources.Coconut;
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.Sleep;
                 }
                 else
                 {
@@ -78,17 +82,20 @@ namespace InterpreterTest
                 string text = "";
                 if (exception is StackOverflowException ashh)
                 {
-                    text += ashh.Message;
+                    text += ashh.Message + Environment.NewLine + "-Jethan";
+
+                    pictureBox1.Visible = true;
+                    secretButtonPressed = true;
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.wuvv;
                 }
                 else
                 {
                     text += "Encountered an error:" + Environment.NewLine;
                     text += exception.Message;
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.HM;
                 }
 
                 tbOutput.RichTextBox.Text = text;
-
-                pictureBox1.Image = InterpreterTest.Properties.Resources.Papaya;
                 
             }
         }
@@ -129,9 +136,6 @@ namespace InterpreterTest
             tbOutput.RichTextBox.BorderStyle = BorderStyle.None;
             tbOutput.BorderStyle = BorderStyle.None;
         }
-
-        bool secretButtonPressed = false;
-        bool secretButtonPressed2 = false;
 
         private void secretButton_Click(object sender, EventArgs e)
         {

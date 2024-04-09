@@ -235,7 +235,7 @@ namespace InterpreterTest
             bool concatLock = true;
             DisplayNode result = new DisplayVariableNode("null");
             //handle different types of display items
-            while (currToken.Type != TokenType.LINE_SEPARATOR)
+            while (_position < _tokens.Count && currToken.Type != TokenType.LINE_SEPARATOR)
             {
                 if (CheckIfDisplayable(currToken) && concatLock)
                 {
@@ -275,7 +275,11 @@ namespace InterpreterTest
                     throw new InvalidOperationException($"Error at line {_lineCounter}: {currToken.Value} in display is invalid");
                 }
                 _position++;
-                currToken = _tokens[_position];                
+              
+                if (_position < _tokens.Count)
+                {
+                    currToken = _tokens[_position];
+                }
             }
             Console.WriteLine(result);
             return result;

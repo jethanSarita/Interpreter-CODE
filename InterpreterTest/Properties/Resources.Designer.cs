@@ -73,9 +73,39 @@ namespace InterpreterTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HM {
+            get {
+                object obj = ResourceManager.GetObject("HM", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Papaya {
             get {
                 object obj = ResourceManager.GetObject("Papaya", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Sleep {
+            get {
+                object obj = ResourceManager.GetObject("Sleep", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wuvv {
+            get {
+                object obj = ResourceManager.GetObject("wuvv", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
