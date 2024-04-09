@@ -21,7 +21,7 @@ namespace InterpreterTest
         // click button to see if lexer and parser are working fine
         private void button1_Click(object sender, EventArgs e)
         {
-            string source = tbInput.Text;
+            string source = tbInput.RichTextBox.Text;
 
             Console.WriteLine(source);
 
@@ -82,7 +82,7 @@ namespace InterpreterTest
         {
             lblOutput.ResetText();
             lblOutput2.ResetText();
-            tbInput.ResetText();
+            tbInput.RichTextBox.ResetText();
         }
 
         private void lblOutput_Click(object sender, EventArgs e)
@@ -102,6 +102,12 @@ namespace InterpreterTest
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            tbInput.RichTextBox.BackColor = ColorTranslator.FromHtml("#222E33");
+            tbInput.RichTextBox.ForeColor = Color.White;
+            tbInput.RichTextBox.Font = new Font("Tahoma", 12, FontStyle.Regular);
+            tbInput.RichTextBox.BorderStyle = BorderStyle.None;
+            tbInput.BorderStyle = BorderStyle.None;
+
             tbOutput.RichTextBox.BackColor = ColorTranslator.FromHtml("#222E33");
             tbOutput.RichTextBox.ForeColor = Color.White;
             tbOutput.RichTextBox.Font = new Font("Tahoma", 12, FontStyle.Regular);

@@ -33,7 +33,7 @@
             this.lblOutput2 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
             this.tbOutput = new InterpreterTest.LineNumberRTB();
-            this.tbInput = new System.Windows.Forms.TextBox();
+            this.tbInput = new InterpreterTest.LineNumberRTB();
             this.SuspendLayout();
             // 
             // btnRun
@@ -98,28 +98,25 @@
             // 
             // tbInput
             // 
-            this.tbInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.tbInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.tbInput.ForeColor = System.Drawing.Color.White;
+            this.tbInput.BackColor = System.Drawing.SystemColors.Window;
+            this.tbInput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.tbInput.Location = new System.Drawing.Point(18, 20);
-            this.tbInput.Margin = new System.Windows.Forms.Padding(4);
-            this.tbInput.Multiline = true;
+            this.tbInput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(848, 431);
-            this.tbInput.TabIndex = 0;
-            this.tbInput.TextChanged += new System.EventHandler(this.tbInput_TextChanged);
+            this.tbInput.Size = new System.Drawing.Size(848, 430);
+            this.tbInput.TabIndex = 6;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 661);
+            this.Controls.Add(this.tbInput);
             this.Controls.Add(this.tbOutput);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblOutput2);
             this.Controls.Add(this.lblOutput);
             this.Controls.Add(this.btnRun);
-            this.Controls.Add(this.tbInput);
             this.Font = new System.Drawing.Font("Cascadia Code", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -137,7 +134,7 @@
         private System.Windows.Forms.Label lblOutput2;
         private System.Windows.Forms.Button btnClear;
         private LineNumberRTB tbOutput;
-        private System.Windows.Forms.TextBox tbInput;
+        private LineNumberRTB tbInput;
     }
 }
 
