@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Web;
 using System.Windows.Forms;
 using System.Xml.XPath;
 using static InterpreterTest.Token;
@@ -115,7 +117,7 @@ namespace InterpreterTest
                                         //Is null, throw error
                                         throw new InvalidOperationException($"Error at line {_lineCounter}: ...'{currentToken.Value}{Peek(1).Value}' <--- No follow up");
                                     }
-                                    
+
                                 }
                                 else
                                 {
@@ -130,48 +132,13 @@ namespace InterpreterTest
                             }
                         }
                     }
-                    /*if (Peek(1) != null && Peek(1).Type == TokenType.IDENTIFIER)
-                    {
-                        _position++;
-                        List<Token> identifiers = ReadIdentifiers();
-                        foreach (var toks in identifiers)
-                        {
-                            statements.Add(ParseVariableDeclaration(currentToken, toks));
-                        }
-                        //Console.WriteLine("Current Token: " + _tokens[_position]);
-                        _position++;
-                        currentToken = _tokens[_position];
-                        if (currentToken.Type == TokenType.EQUAL)
-                        {
-                            if (!(Peek(1) != null &&
-                                Peek(1).Type == TokenType.NUMBER ||
-                                Peek(1).Type == TokenType.LETTER ||
-                                Peek(1).Type == TokenType.TRUE ||
-                                Peek(1).Type == TokenType.FALSE ||
-                                Peek(1).Type == TokenType.DECIMAL_NUMBER))
-                            {
-                                throw new InvalidOperationException($"Error at line {_lineCounter}: {UnPeek(1).Value} = {Peek(1).Value} is not a valid assignment");
-                            }
-                            else
-                            {
-                                foreach (var toks in identifiers)
-                                {
-                                    statements.Add(ParseVariableAssignment(toks, Peek(1)));
-                                }
-                                _position++;
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid {currentToken.Value} declaration");
-                    }*/
                 }
-                //[Identifier][Equals][Literal]
+                //[Identifier][Equals]([Literal] + [Expression])
                 else if (currentToken.Type == TokenType.IDENTIFIER)
                 {
-                    string idenitiferName = currentToken.Value;
+                    statements.Add(ParseVariableAssignment());
+
+                    /*string idenitiferName = currentToken.Value;
                     Token IdentifierToken = currentToken;
                     if (Peek(1) != null && Peek(1).Type == TokenType.EQUAL)
                     {
@@ -193,7 +160,7 @@ namespace InterpreterTest
                     else
                     {
                         throw new InvalidOperationException($"Error at line  {_lineCounter} : Invalid \"{idenitiferName}\" (Identifier) call/assignment, no succeeding equals sign (=)");
-                    }
+                    }*/
                 }
                 //[Display][Colon][{contents}]
                 else if (currentToken.Type == TokenType.DISPLAY)
@@ -215,6 +182,30 @@ namespace InterpreterTest
                 throw new Exception($"Error at line {_lineCounter}: Expected 'END CODE'");
             }
             return new ProgramNode(statements);
+        }
+
+        private bool IsOperator(Token token)
+        {
+            bool result = false;
+            switch (token.Type)
+            {
+                case TokenType.MINUS:
+                    result = true;
+                    break;
+                case TokenType.PLUS:
+                    result = true;
+                    break;
+                case TokenType.SLASH:
+                    result = true;
+                    break;
+                case TokenType.STAR:
+                    result = true;
+                    break;
+                case TokenType.MODULO:
+                    result = true;
+                    break;
+            }
+            return result;
         }
 
         private ASTNode TypeCompatibility(Token dataType, Token variable, Token literal)
@@ -341,6 +332,217 @@ namespace InterpreterTest
             return toks;
 
         }
+
+        private ASTNode ParseVariableAssignment()
+        {
+
+            Token currentToken = _tokens[_position];
+
+            string varName = currentToken.Value;
+            ExpressionNode node = new ExpressionLiteral(null, null);
+            //check if following token is null
+            if (Peek(1) != null)
+            {
+                //not null, check if token type is equal
+                if (Peek(1).Type == TokenType.EQUAL)
+                {
+                    //equal, check if following is null
+                    if (Peek(2) != null)
+                    {
+                        //not null, check if following is identifier
+                        if (Peek(2).Type == TokenType.IDENTIFIER)
+                        {
+                            //add this later
+                        }
+                        //check if following is number
+                        else if (Peek(2).Type == TokenType.NUMBER)
+                        {
+                            node = ParseExpressionLiteral(Peek(2));
+                            if (Peek(3) != null)
+                            {
+                                if (IsOperator(Peek(3)))
+                                {
+                                    if (Peek(4) != null)
+                                    {
+                                        if (Peek(4).Type == TokenType.NUMBER)
+                                        {
+                                            node = new ExpressionBinary(ParseExpressionLiteral(Peek(2)), ParseExpressionLiteral(Peek(4)), Peek(3).Value);
+                                            string lastOp = Peek(3).Value;
+                                            _position += 4;
+
+                                            while (_position < _tokens.Count)
+                                            {
+                                                currentToken = _tokens[_position];
+
+                                                if (Peek(1) != null)
+                                                {
+                                                    if (IsOperator(Peek(1)))
+                                                    {
+                                                        if (Peek(2) != null)
+                                                        {
+                                                            if (Peek(2).Type == TokenType.NUMBER)
+                                                            {
+                                                                if (IsAS(lastOp) && IsMD(Peek(1).Value))
+                                                                {
+                                                                    Console.WriteLine("AS MD");
+                                                                    if (node is ExpressionBinary n)
+                                                                    {
+                                                                        ExpressionNode newNode = new ExpressionBinary(n._right, ParseExpressionLiteral(Peek(2)), Peek(1).Value);
+                                                                        node = new ExpressionBinary(n._left, newNode, lastOp);
+                                                                        lastOp = Peek(1).Value;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        //error
+                                                                    }
+                                                                }
+                                                                else if (IsAS(lastOp) && IsAS(Peek(1).Value))
+                                                                {
+                                                                    Console.WriteLine("AS AS");
+                                                                    if (node is ExpressionBinary n)
+                                                                    {
+                                                                        node = new ExpressionBinary(n, ParseExpressionLiteral(Peek(2)), Peek(1).Value);
+                                                                        lastOp = Peek(1).Value;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        //error
+                                                                    }
+                                                                }
+                                                                else if (IsMD(lastOp) && IsAS(Peek(1).Value))
+                                                                {
+                                                                    Console.WriteLine("MD AS");
+                                                                    if (node is ExpressionBinary n)
+                                                                    {
+                                                                        node = new ExpressionBinary(n, ParseExpressionLiteral(Peek(2)), Peek(1).Value);
+                                                                        lastOp = Peek(1).Value;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        //error
+                                                                    }
+                                                                }
+                                                                else if (IsMD(lastOp) && IsMD(Peek(1).Value))
+                                                                {
+                                                                    Console.WriteLine("MD MD");
+                                                                    if (node is ExpressionBinary n)
+                                                                    {
+                                                                        ExpressionNode newNode = new ExpressionBinary(n._right, ParseExpressionLiteral(Peek(2)), Peek(1).Value);
+                                                                        node = new ExpressionBinary(n._left, newNode, lastOp);
+                                                                        lastOp = Peek(1).Value;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        //error
+                                                                    }
+                                                                }
+                                                                _position += 2;
+                                                            }
+                                                            else
+                                                            {
+                                                                //error
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            //error
+                                                        }
+                                                    }
+                                                    else if (Peek(1).Type == TokenType.LINE_SEPARATOR)
+                                                    {
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        //error
+                                                    }
+                                                }
+                                                else
+                                                {
+
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            //error
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //error
+                                    }
+                                }
+                                //Not operator, check if end of line
+                                else if (Peek(3).Type == TokenType.LINE_SEPARATOR)
+                                {
+                                    _position += 2;
+                                }
+                                else
+                                {
+                                    //error
+                                }
+                            }
+                            else
+                            {
+                                //error
+                            }
+                        }
+                        //check if following is decimal number
+                        else if (Peek(2).Type == TokenType.DECIMAL_NUMBER)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+                    //not equal,
+                }
+            }
+            else
+            {
+                //null, throw error
+                throw new InvalidOperationException($"Error at line {_lineCounter}: '{currentToken.Value}' <--- Missing follow up");
+            }
+            Console.WriteLine("-------------------Variable Name: " + varName + ", Node: " + node);
+            return new VariableAssignmentNode2(varName, node);
+        }
+
+        private bool IsMD(string lastOp)
+        {
+            bool result = false;
+            switch (lastOp)
+            {
+                case "*":
+                    result = true;
+                    break;
+                case "/":
+                    result = true;
+                    break;
+            }
+            return result;
+        }
+
+        private bool IsAS(string lastOp)
+        {
+            bool result = false;
+            switch (lastOp)
+            {
+                case "+":
+                    result = true;
+                    break;
+                case "-":
+                    result = true;
+                    break;
+            }
+            return result;
+        }
+
         private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
         {
             return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
@@ -536,6 +738,28 @@ namespace InterpreterTest
             return new ExpressionLiteral(literal.Value, literalType);
         }
 
-
+        private string ParseExpressionLiteralType(Token literal)
+        {
+            string literalType = "";
+            switch (literal.Type)
+            {
+                case TokenType.LETTER:
+                    literalType = "LETTER";
+                    break;
+                case TokenType.NUMBER:
+                    literalType = "NUMBER";
+                    break;
+                case TokenType.DECIMAL_NUMBER:
+                    literalType = "DECIMAL_NUMBER";
+                    break;
+                case TokenType.TRUE:
+                    literalType = "TRUE";
+                    break;
+                case TokenType.FALSE:
+                    literalType = "FALSE";
+                    break;
+            }
+            return literalType;
+        }
     }
 }
