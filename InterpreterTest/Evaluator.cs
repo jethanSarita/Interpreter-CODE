@@ -52,14 +52,16 @@ namespace InterpreterTest
                     }
                     _position++;
                 }
-                else if (currNode is VariableAssignmentNode variableAssignmentNode)
+                else if (currNode is VariableAssignmentNode2 variableAssignmentNode)
                 {
-                    
-                    string varName = variableAssignmentNode._varName;
+                    variableAssignmentNode.eval(_symbolStorage);
+                    /*string varName = variableAssignmentNode._varName;
                     string literal = variableAssignmentNode._literal;
                     string literalType = variableAssignmentNode._literalType;
 
-                    if (!(_symbolStorage.CheckVariable(varName)))
+                    //you can disable this para typeless uwu
+                    //for academic reasons keep it on
+                    if (!(_symbolStorage.IsVariable(varName)))
                     {
                         throw new InvalidOperationException($"Variable: '{varName}' doesn't exist");
                     }
@@ -89,7 +91,7 @@ namespace InterpreterTest
                             _symbolStorage.FLOAT[varName] = float.Parse(literal);
                             Console.WriteLine("Added FLOAT " + literal + " to " + varName);
                             break;
-                    }
+                    }*/
                     _position++;
                 }
                 else if (currNode is DisplayNode displayNode)

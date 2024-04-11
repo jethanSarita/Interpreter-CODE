@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,11 +38,29 @@ namespace InterpreterTest
 
     }
 
+    internal class VariableAssignmentNode2 : ASTNode
+    {
+        public string _varName;
+        public ExpressionNode _expressionNode;
+
+        public VariableAssignmentNode2(string varName, ExpressionNode expressionNode)
+        {
+            _varName = varName;
+            _expressionNode = expressionNode;
+        }
+
+        public void eval(SymbolStorage symbolStorage)
+        {
+            Console.WriteLine("TEST " + _expressionNode.eval(symbolStorage));
+            symbolStorage.AssignVariable(_varName, _expressionNode.eval(symbolStorage));
+        }
+    }
+
     internal class VariableAssignmentNode : ASTNode
     {
-        public String _varName { get; }
-        public String _literal { get; }
-        public String _literalType { get; }
+        public string _varName { get; }
+        public string _literal { get; }
+        public string _literalType { get; }
 
         public VariableAssignmentNode(string varName, string literal, string literalType)
         {
@@ -50,7 +69,7 @@ namespace InterpreterTest
             _literalType = literalType;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return $"Variable Name: {_varName}, Value: {_literal}, Literal Type: {_literalType}";
         }
@@ -76,7 +95,6 @@ namespace InterpreterTest
         public override string eval(SymbolStorage symbolStorage)
         {
             string check = _left.eval(symbolStorage) + _right.eval(symbolStorage);
-            Console.WriteLine("------------------" + check);
             return _left.eval(symbolStorage) + _right.eval(symbolStorage);
         }
     }
@@ -91,7 +109,7 @@ namespace InterpreterTest
         }
         public override string eval(SymbolStorage symbolStorage)
         {
-            return symbolStorage.findVariable(_varName);
+            return "" + symbolStorage.findVariableToString(_varName);
         }
     }
 
@@ -106,6 +124,125 @@ namespace InterpreterTest
         public override string eval(SymbolStorage symbolStorage)
         {
             return _value;
+        }
+    }
+
+    internal abstract class ExpressionNode : ASTNode
+    {
+        public abstract dynamic eval(SymbolStorage symbolStorage);
+    }
+
+    internal class ExpressionBinary : ExpressionNode
+    {
+        public ExpressionNode _left;
+        public ExpressionNode _right;
+        public string _binaryOperator;
+
+        public ExpressionBinary(ExpressionNode left, ExpressionNode right, string binaryOperator)
+        {
+            _left = left;
+            _right = right;
+            _binaryOperator = binaryOperator;
+        }
+
+        public override dynamic eval(SymbolStorage symbolStorage)
+        {
+            dynamic result = 0;
+            switch (_binaryOperator)
+            {
+                case "-":
+                    //Subtraction
+                    result = _left.eval(symbolStorage) - _right.eval(symbolStorage);
+                    break;
+                case "+":
+                    //Addition
+                    result = _left.eval(symbolStorage) + _right.eval(symbolStorage);
+                    break;
+                case "/":
+                    //Divide
+                    result = _left.eval(symbolStorage) / _right.eval(symbolStorage);
+                    break;
+                case "*":
+                    //Multiplication
+                    result = _left.eval(symbolStorage) * _right.eval(symbolStorage);
+                    break;
+                case "%":
+                    //Modulo
+                    result = _left.eval(symbolStorage) % _right.eval(symbolStorage);
+                    break;
+                case "==":
+                    //Is Equal
+                    result = _left.eval(symbolStorage) == _right.eval(symbolStorage);
+                    break;
+                case ">":
+                    //Greater than 
+                    result = _left.eval(symbolStorage) > _right.eval(symbolStorage);
+                    break;
+                case "<":
+                    //Less than
+                    result = _left.eval(symbolStorage) < _right.eval(symbolStorage);
+                    break;
+                case ">=":
+                    //Greater than or equal
+                    result = _left.eval(symbolStorage) >= _right.eval(symbolStorage);
+                    break;
+                case "<=":
+                    //Less than or equal
+                    result = _left.eval(symbolStorage) <= _right.eval(symbolStorage);
+                    break;
+            }
+            return result;
+        }
+    }
+
+    internal class ExpressionVariable : ExpressionNode
+    {
+        public string _varName;
+
+        public ExpressionVariable(string varName)
+        {
+            _varName = varName;
+        }
+
+        public override dynamic eval(SymbolStorage symbolStorage)
+        {
+            return symbolStorage.findVariableToExpression(_varName);
+        }
+    }
+
+    internal class ExpressionLiteral : ExpressionNode
+    {
+        public string _literal;
+        public string _literalType;
+
+        public ExpressionLiteral(string literal, string literalType)
+        {
+            _literal = literal;
+            _literalType = literalType;
+        }
+
+        public override dynamic eval(SymbolStorage symbolStorage)
+        {
+            dynamic result = null;
+            switch (_literalType)
+            {
+                case "LETTER":
+                    result = _literal[0];
+                    break;
+                case "NUMBER":
+                    result = int.Parse(_literal);
+                    break;
+                case "DECIMAL_NUMBER":
+                    result = float.Parse(_literal);
+                    break;
+                case "TRUE":
+                    result = true;
+                    break;
+                case "FALSE":
+                    result = false;
+                    break;
+            }
+            return result;
         }
     }
 

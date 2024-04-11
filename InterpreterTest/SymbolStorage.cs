@@ -21,30 +21,30 @@ namespace InterpreterTest
             CHAR = new Dictionary<string, char>();
         }
 
-        internal string findVariable(string varName)
+        internal dynamic findVariableToString(string varName)
         {
-            string result = "";
+            dynamic result;
             if(INT.ContainsKey(varName))
             {
-                result += INT[varName];
+                result = INT[varName];
             }else if (FLOAT.ContainsKey(varName))
             {
-                result += FLOAT[varName];
+                result = FLOAT[varName];
             }
             else if (BOOL.ContainsKey(varName))
             {
                 if (BOOL[varName])
                 {
-                    result += "TRUE";
+                    result = "TRUE";
                 }
                 else
                 {
-                    result += "FALSE";
+                    result = "FALSE";
                 }
             }
             else if (CHAR.ContainsKey(varName))
             {
-                result += CHAR[varName];
+                result = CHAR[varName];
             }
             else
             {
@@ -53,7 +53,7 @@ namespace InterpreterTest
             return result;
         }
 
-        public bool CheckVariable(string varName)
+        public bool IsVariable(string varName)
         {
             bool result = false;
             if (INT.ContainsKey(varName))
@@ -71,6 +71,62 @@ namespace InterpreterTest
             else if (CHAR.ContainsKey(varName))
             {
                 result = true;
+            }
+            return result;
+        }
+
+        internal void AssignVariable(string varName, dynamic literal)
+        {
+            if (IsVariable(varName))
+            {
+                if (literal is int)
+                {
+                    INT[varName] = literal;
+                }
+                else if (literal is float)
+                {
+                    FLOAT[varName] = literal;
+                }
+                else if (literal is char)
+                {
+                    CHAR[varName] = literal;
+                }
+                else if (literal is bool)
+                {
+                    BOOL[varName] = literal;
+                }
+            }
+        }
+
+        public dynamic findVariableToExpression(string varName)
+        {
+            dynamic result;
+            if (INT.ContainsKey(varName))
+            {
+                result = INT[varName];
+            }
+            else if (FLOAT.ContainsKey(varName))
+            {
+                result = FLOAT[varName];
+            }
+            else if (BOOL.ContainsKey(varName))
+            {
+                if (BOOL[varName])
+                {
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            else if (CHAR.ContainsKey(varName))
+            {
+                result = CHAR[varName];
+            }
+            else
+            {
+                throw new InvalidOperationException($"{varName} doesn't exist");
             }
             return result;
         }
