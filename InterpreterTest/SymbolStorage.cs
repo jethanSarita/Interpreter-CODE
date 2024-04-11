@@ -74,5 +74,63 @@ namespace InterpreterTest
             }
             return result;
         }
+
+        public void setValue(string varName, string value)
+        {
+            if(!CheckVariable(varName))
+            {
+                throw new InvalidOperationException($"Variable {varName} doesn't exist.");
+            }
+
+            if(INT.ContainsKey(varName)) 
+            {
+               if(int.TryParse(value, out int intValue))
+                {
+                    INT[varName] = intValue;
+                }
+               else
+                {
+                    throw new ArgumentException("Value must be of type INT");
+                }
+            }
+            else if (FLOAT.ContainsKey(varName))
+            {
+                if (float.TryParse(value, out float floatValue))
+                {
+                    FLOAT[varName] = floatValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type FLOAT");
+                }
+            }
+            else if (CHAR.ContainsKey(varName))
+            {
+                if (char.TryParse(value, out char charValue))
+                {
+                    CHAR[varName] = charValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type CHAR");
+                }
+            }
+            else if (BOOL.ContainsKey(varName))
+            {
+                if (bool.TryParse(value, out bool boolValue))
+                {
+                    BOOL[varName] = boolValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type BOOL");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"{varName} doesn't exist");
+            }
+        }
+        
     }
 }

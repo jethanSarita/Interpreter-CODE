@@ -15,7 +15,7 @@ namespace InterpreterTest
     {
 
         bool secretButtonPressed = false;
-        bool secretButtonPressed2 = false;
+        bool secretButtonPressed2 = false;        
 
         public Form1()
         {
@@ -68,11 +68,24 @@ namespace InterpreterTest
                     {
                         Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
                     }
+                    else if (node is ScanStatementNode scanStatementNode)
+                    {
+                        Console.WriteLine("scanStatementNode: " + scanStatementNode.ToString());
+
+                        foreach (var scanItem in scanStatementNode.Scans)
+                        {
+                            Console.WriteLine("  " + scanItem.ToString());
+                        }
+                    }
+                    else if (node is ScannedIdentifierNode scannedIdentifierNode)
+                    {
+                        Console.WriteLine("scannedIdentifierNode: " + scannedIdentifierNode.ToString());
+                    }
                 }
 
                 SymbolStorage symbolStorage = new SymbolStorage();
 
-                Evaluator eval = new Evaluator(ast, symbolStorage);
+                Evaluator eval = new Evaluator(ast, symbolStorage, this);
                 string result = eval.Evaluate();
                 Console.WriteLine("Result: " + result);
                 tbOutput.RichTextBox.Text = result;
@@ -105,6 +118,9 @@ namespace InterpreterTest
             lblOutput.ResetText();
             lblOutput2.ResetText();
             tbInput.RichTextBox.ResetText();
+
+            //shouldn't we clear tbOuptu as well
+            tbOutput.RichTextBox.ResetText();
         }
 
         private void lblOutput_Click(object sender, EventArgs e)
@@ -120,6 +136,18 @@ namespace InterpreterTest
         private void tbInput_TextChanged(object sender, EventArgs e)
         {
             //dont change
+        }
+
+        public string getText()
+        {
+           if ( tbOutput.InvokeRequired)
+            {
+                return (string)tbOutput.Invoke(new Func<string>(() => tbOutput.RichTextBox.Text));
+            }
+           else
+            {
+                return tbOutput.RichTextBox.Text;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)

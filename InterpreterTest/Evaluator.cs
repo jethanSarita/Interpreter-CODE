@@ -12,12 +12,14 @@ namespace InterpreterTest
         private readonly List<ASTNode> _ast;
         private int _position;
         private SymbolStorage _symbolStorage;
+        private Form1 _form1;
 
-        public Evaluator(ProgramNode ast, SymbolStorage symbolStorage)
+        public Evaluator(ProgramNode ast, SymbolStorage symbolStorage, Form1 form1)
         {
             _ast = ast.Statements;
             _symbolStorage = symbolStorage;
             _position = 0;
+            _form1 = form1;
         }
 
 
@@ -97,6 +99,30 @@ namespace InterpreterTest
                     Console.WriteLine(displayNode);
                     result += displayNode.eval(_symbolStorage);
                     _position++;
+                }
+                else if (currNode is ScanStatementNode scanNode)
+                {
+                    foreach(ASTNode scanItem  in scanNode.Scans)
+                    {
+                        if(scanItem is ScannedIdentifierNode identifierNode)
+                        {
+                            //Console.WriteLine($"Enter value for {identifierNode.varName}: ");
+                            string input = _form1.getText();
+
+                            string[] inputValues = input.Split(',');
+
+                            if(inputValues.Length != scanNode.Scans.Count)
+                            {
+                                throw new InvalidOperationException(
+                                    $"Error: Expected {scanNode.Scans.Count} values, but received {inputValues.Length}");
+                            }
+
+                            for(int i = 0; i < scanNode.Scans.Count; i++)
+                            {
+                                _symbolStorage.setValue(identifierNode.varName, inputValues[i].Trim());
+                            }
+                        }
+                    }                                    
                 }
             }
             return result;
