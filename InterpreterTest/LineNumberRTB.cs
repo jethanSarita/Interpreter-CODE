@@ -33,6 +33,8 @@ namespace InterpreterTest
         {
             get { return _strip; }
         }
+
+        public bool Multiline { get; internal set; }
     }
 
     public enum LineNumberStyle { None, OffsetColors, Boxed };
