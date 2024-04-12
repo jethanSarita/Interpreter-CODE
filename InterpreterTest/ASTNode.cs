@@ -51,7 +51,6 @@ namespace InterpreterTest
 
         public void eval(SymbolStorage symbolStorage)
         {
-            Console.WriteLine("TEST " + _expressionNode.eval(symbolStorage));
             symbolStorage.AssignVariable(_varName, _expressionNode.eval(symbolStorage));
         }
     }
@@ -153,42 +152,52 @@ namespace InterpreterTest
                 case "-":
                     //Subtraction
                     result = _left.eval(symbolStorage) - _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "-" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "+":
                     //Addition
                     result = _left.eval(symbolStorage) + _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "+" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "/":
                     //Divide
                     result = _left.eval(symbolStorage) / _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "/" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "*":
                     //Multiplication
                     result = _left.eval(symbolStorage) * _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "*" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "%":
                     //Modulo
                     result = _left.eval(symbolStorage) % _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "%" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "==":
                     //Is Equal
                     result = _left.eval(symbolStorage) == _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "==" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case ">":
                     //Greater than 
                     result = _left.eval(symbolStorage) > _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + ">" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "<":
                     //Less than
                     result = _left.eval(symbolStorage) < _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "<" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case ">=":
                     //Greater than or equal
                     result = _left.eval(symbolStorage) >= _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + ">=" + _right.eval(symbolStorage) + "=" + result);
                     break;
                 case "<=":
                     //Less than or equal
                     result = _left.eval(symbolStorage) <= _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "<=" + _right.eval(symbolStorage) + "=" + result);
                     break;
             }
             return result;
