@@ -15,10 +15,6 @@ This interpreter project is written using [C#](https://www.w3schools.com/cs/inde
 - The `Expression`, `Term`, and `Factor` methods implement the [recursive descent parsing algorithm](https://en.wikipedia.org/wiki/Recursive_descent_parser) to handle expressions, terms, and factors, respectively.
 
 ### Grammar Rules ([Extended Backus-Naur Form](https://en.wikipedia.org/wiki/Extended_Backus–Naur_form))
-- Expression&nbsp;&nbsp;&nbsp;-> Term { ('+' | '-') Term }
-- Term&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Factor { ('*' | '/') Factor }
-- Factor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> Declaration | Literal | Identifier | '(' Expression ')'
-- Declaration&nbsp;-> Keyword Identifier [ '=' Expression ]
 
 ### ASTNode Heirarchy
 - The ASTNode class is an abstract base class for all nodes in the abstract syntax tree.
