@@ -28,24 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tbInput = new System.Windows.Forms.TextBox();
             this.btnRun = new System.Windows.Forms.Button();
             this.lblOutput = new System.Windows.Forms.Label();
             this.lblOutput2 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
+            this.secretButton = new System.Windows.Forms.Button();
+            this.tbInput = new InterpreterTest.LineNumberRTB();
+            this.tbOutput = new InterpreterTest.LineNumberRTB();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // tbInput
-            // 
-            this.tbInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.tbInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.tbInput.ForeColor = System.Drawing.Color.White;
-            this.tbInput.Location = new System.Drawing.Point(18, 20);
-            this.tbInput.Margin = new System.Windows.Forms.Padding(4);
-            this.tbInput.Multiline = true;
-            this.tbInput.Name = "tbInput";
-            this.tbInput.Size = new System.Drawing.Size(848, 628);
-            this.tbInput.TabIndex = 0;
             // 
             // btnRun
             // 
@@ -97,34 +89,80 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // secretButton
+            // 
+            this.secretButton.Location = new System.Drawing.Point(1250, 20);
+            this.secretButton.Name = "secretButton";
+            this.secretButton.Size = new System.Drawing.Size(22, 22);
+            this.secretButton.TabIndex = 8;
+            this.secretButton.UseVisualStyleBackColor = true;
+            this.secretButton.Click += new System.EventHandler(this.secretButton_Click);
+            // 
+            // tbInput
+            // 
+            this.tbInput.BackColor = System.Drawing.SystemColors.Window;
+            this.tbInput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tbInput.Location = new System.Drawing.Point(18, 20);
+            this.tbInput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbInput.Name = "tbInput";
+            this.tbInput.Size = new System.Drawing.Size(848, 430);
+            this.tbInput.TabIndex = 6;
+            // 
+            // tbOutput
+            // 
+            this.tbOutput.BackColor = System.Drawing.SystemColors.Window;
+            this.tbOutput.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tbOutput.Location = new System.Drawing.Point(18, 460);
+            this.tbOutput.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.Size = new System.Drawing.Size(848, 187);
+            this.tbOutput.TabIndex = 5;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Coconut;
+            this.pictureBox1.Location = new System.Drawing.Point(878, 155);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(394, 295);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 7;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 27F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 661);
+            this.Controls.Add(this.secretButton);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.tbInput);
+            this.Controls.Add(this.tbOutput);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblOutput2);
             this.Controls.Add(this.lblOutput);
             this.Controls.Add(this.btnRun);
-            this.Controls.Add(this.tbInput);
             this.Font = new System.Drawing.Font("Cascadia Code", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "Integrated Development Environment";
+            this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox tbInput;
         private System.Windows.Forms.Button btnRun;
         private System.Windows.Forms.Label lblOutput;
         private System.Windows.Forms.Label lblOutput2;
         private System.Windows.Forms.Button btnClear;
+        private LineNumberRTB tbOutput;
+        private LineNumberRTB tbInput;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button secretButton;
     }
 }
 

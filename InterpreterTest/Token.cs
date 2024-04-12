@@ -36,7 +36,7 @@ namespace InterpreterTest
             COMMA,          // ,
 
             COLON,          // :
-            NEXT_LINE,       // $
+            NEXT_LINE,      // $
             //One or two character tokens
             NOT_EQUAL,      // <>
             EQUAL_EQUAL,    // ==
@@ -49,8 +49,9 @@ namespace InterpreterTest
             IDENTIFIER,     // num1, varName, x, y
             LETTER,         // 'a', 'b', 'c'
             NUMBER,         // 22
-            DECIMAL_NUMBER,  // 345.3
+            DECIMAL_NUMBER, // 345.3
             STRING,         // "Ola"
+
             //Keywords
 
             //DataTypes
@@ -82,9 +83,9 @@ namespace InterpreterTest
             END,            // "END"
             CODE,           // "CODE"
             
-            LINE_SEPARATOR,  // "\n"
+            LINE_SEPARATOR, // "\n"
 
-            EOF,
+            EOF,            // idk what this is supposed to do
         }
 
         public TokenType Type { get; }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +13,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE", "SCAN" };
+        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE", "SCAN", "ASH" };
 
         public Lexer(string source)
         {
@@ -93,6 +95,8 @@ namespace InterpreterTest
                             case "SCAN":
                                 tokens.Add(new Token(Token.TokenType.SCAN, data));
                                 break;
+                            case "ASH":
+                                throw new StackOverflowException("I love you Ashh.. (- 3 -) <3 <3 <3");
                         }
                     }
                     else
@@ -100,16 +104,21 @@ namespace InterpreterTest
                         tokens.Add(new Token(Token.TokenType.IDENTIFIER, data));
                     }
                 }
+                //Check if digit
                 else if (char.IsDigit(currentChar))
                 {
                     string number = ReadWhile(c => char.IsDigit(c) || c == '.');
-                    if (float.TryParse(number, out float result))
+                    if (int.TryParse(number, out int intVal))
+                    {
+                        tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                    }
+                    else if (float.TryParse(number, out float floatVal))
                     {
                         tokens.Add(new Token(Token.TokenType.DECIMAL_NUMBER, number));
                     }
                     else
                     {
-                        tokens.Add(new Token(Token.TokenType.NUMBER, number));
+                        throw new InvalidOperationException($"{number} is not a valid number literal");
                     }
                     //_position++;
                 }
@@ -223,7 +232,19 @@ namespace InterpreterTest
                 }
                 else if (currentChar == '"')
                 {
-                    tokens.Add(ReadStringLiteral());
+                    Token toks = ReadStringLiteral();
+                    if (toks.Value == "TRUE")
+                    {
+                        tokens.Add(new Token(Token.TokenType.TRUE, "TRUE"));
+                    }
+                    else if (toks.Value == "FALSE")
+                    {
+                        tokens.Add(new Token(Token.TokenType.FALSE, "FALSE"));
+                    }
+                    else
+                    {
+                        tokens.Add(toks);
+                    }
                     //_position++;
                 }
                 else if (currentChar == '\'' || currentChar == '[' || currentChar == ']')
@@ -286,6 +307,7 @@ namespace InterpreterTest
         {
             return char.IsLetterOrDigit(c) || c == '_';
         }
+
         private Token ReadStringLiteral()
         {
             char quote = _source[_position];
