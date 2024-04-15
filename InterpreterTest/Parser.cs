@@ -177,7 +177,7 @@ namespace InterpreterTest
                 }
                 _position++;
             }            
-            if(_insideCodeBlock)
+            if (_insideCodeBlock)
             {
                 throw new Exception($"Error at line {_lineCounter}: Expected 'END CODE'");
             }
@@ -332,7 +332,7 @@ namespace InterpreterTest
             return toks;
 
         }
-
+        /*
         private ASTNode ParseVariableAssignment()
         {
 
@@ -541,6 +541,121 @@ namespace InterpreterTest
                     break;
             }
             return result;
+        }*/
+
+        //recursive descent parsing for arithmetic expression into variable assignment with operator precedence
+        // parses variable assignment part of token stream
+        private ASTNode ParseVariableAssignment()
+        {
+            Token currentToken = _tokens[_position];
+            string varName = currentToken.Value;
+
+            ExpressionNode node = ParseExpression();
+
+            Console.WriteLine("-------------------Variable Name: " + varName + ", Node: " + node);
+            return new VariableAssignmentNode2(varName, node);
+        }
+
+        // breaking down the expression into smaller parts for parsing
+        private ExpressionNode ParseExpression()
+        {
+            // parse first term
+            ExpressionNode left = ParseTerm();
+
+
+            // continue parsing other terms and create nodes
+            // + and - as parents and other terms as children
+            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-"))
+            {
+                Token opToken = NextToken(); 
+                ExpressionNode right = ParseTerm(); 
+                left = new ExpressionBinary(left, right, opToken.Value); 
+            }
+
+            return left;
+        }
+
+        // now parse terms to factors
+        private ExpressionNode ParseTerm()
+        {
+            // parse first factor
+            ExpressionNode left = ParseFactor();
+
+            // continue parsing other factors and create nodes
+            // * and / as parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/"))
+            {
+                Token opToken = NextToken(); 
+                ExpressionNode right = ParseFactor(); 
+                left = new ExpressionBinary(left, right, opToken.Value);
+            }
+
+            return left;
+        }
+
+        // parse factors into nodes for evaluation
+        private ExpressionNode ParseFactor()
+        {
+            Token token = NextToken();
+
+            // if token is a literal, create a literal node in the AST
+            if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER || token.Type == TokenType.IDENTIFIER)
+            {
+                return new ExpressionLiteral(token.Value, token.Type.ToString());
+            }
+            // if current token is open paren, parse expression inside the parenthesis
+            else if (token.Type == TokenType.LEFT_PAREN)
+            {
+                try
+                {
+                    ExpressionNode expression = ParseExpression();
+                    _position++;
+                    Consume(TokenType.RIGHT_PAREN);
+                    return expression;
+                }
+                catch
+                {
+                    throw new InvalidOperationException("Expected token of type RIGHT_PAREN, but found " + Peek(0).Type + ", Token Value: " + Peek(0).Value);
+                }
+            }
+            // if naay equals, parse the expression on the right side of equals
+            else if (token.Type == TokenType.EQUAL)
+            {
+                ExpressionNode rhsExpression = ParseExpression();
+                return rhsExpression;
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid factor.");
+            }
+        }
+
+        // utility methods for token manipulation
+        // retrieves next token and advances position in the token stream
+        private Token NextToken()
+        {
+            if (_position < _tokens.Count - 1)
+            {
+                _position++;
+                return _tokens[_position];
+            }
+            else
+            {
+                throw new InvalidOperationException("No more tokens available.");
+            }
+        }
+
+        // if next token matches argument advance position in the token stream
+        private void Consume(TokenType type)
+        {
+            if (_position < _tokens.Count && _tokens[_position].Type == type)
+            {
+                _position++;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Expected token of type {type}, but found {_tokens[_position].Type}.");
+            }
         }
 
         private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
@@ -587,7 +702,7 @@ namespace InterpreterTest
                     {
                         if (Peek(2) != null && CheckIfDisplayable(Peek(2)))
                         {
-                            result = new DisplayConcatNode(PraseDisplayable(currToken), PraseDisplayable(Peek(2)));
+                            result = new DisplayConcatNode(ParseDisplayable(currToken), ParseDisplayable(Peek(2)));
                             _position++;
                             _position++;
                             concatLock = false;
@@ -606,7 +721,7 @@ namespace InterpreterTest
                 {
                     if (Peek(1) != null && CheckIfDisplayable(Peek(1)))
                     {
-                        result = new DisplayConcatNode(result, PraseDisplayable(Peek(1)));
+                        result = new DisplayConcatNode(result, ParseDisplayable(Peek(1)));
                         _position++;
                     }
                     else
@@ -625,7 +740,7 @@ namespace InterpreterTest
             return result;
         }
 
-        private DisplayNode PraseDisplayable(Token token)
+        private DisplayNode ParseDisplayable(Token token)
         {
             if (token.Type == TokenType.IDENTIFIER)
             {
