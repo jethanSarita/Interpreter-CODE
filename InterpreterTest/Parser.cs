@@ -650,7 +650,7 @@ namespace InterpreterTest
         {
             if (_position < _tokens.Count && _tokens[_position].Type == type)
             {
-                _position++;
+
             }
             else
             {
