@@ -41,7 +41,8 @@ namespace InterpreterTest
                         Console.WriteLine(token);
                     }
                     lblOutput.Text = "the lexer is lexing";
-                    pictureBox1.Image = InterpreterTest.Properties.Resources.Sleep;
+                    //pictureBox1.Image = InterpreterTest.Properties.Resources.Sleep;
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.Coconut;
                 }
                 else
                 {
@@ -105,7 +106,9 @@ namespace InterpreterTest
                 {
                     text += "Encountered an error:" + Environment.NewLine;
                     text += exception.Message;
-                    pictureBox1.Image = InterpreterTest.Properties.Resources.HM;
+                    //pictureBox1.Image = InterpreterTest.Properties.Resources.HM;
+                    pictureBox1.Image = InterpreterTest.Properties.Resources.Papaya;
+
                 }
 
                 tbOutput.RichTextBox.Text = text;

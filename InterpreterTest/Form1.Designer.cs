@@ -120,7 +120,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Sleep;
+            this.pictureBox1.Image = global::InterpreterTest.Properties.Resources.Coconut;
             this.pictureBox1.Location = new System.Drawing.Point(878, 155);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(394, 295);

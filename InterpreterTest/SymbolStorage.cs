@@ -21,30 +21,30 @@ namespace InterpreterTest
             CHAR = new Dictionary<string, char>();
         }
 
-        internal string findVariable(string varName)
+        internal dynamic findVariableToString(string varName)
         {
-            string result = "";
+            dynamic result;
             if(INT.ContainsKey(varName))
             {
-                result += INT[varName];
+                result = INT[varName];
             }else if (FLOAT.ContainsKey(varName))
             {
-                result += FLOAT[varName];
+                result = FLOAT[varName];
             }
             else if (BOOL.ContainsKey(varName))
             {
                 if (BOOL[varName])
                 {
-                    result += "TRUE";
+                    result = "TRUE";
                 }
                 else
                 {
-                    result += "FALSE";
+                    result = "FALSE";
                 }
             }
             else if (CHAR.ContainsKey(varName))
             {
-                result += CHAR[varName];
+                result = CHAR[varName];
             }
             else
             {
@@ -53,7 +53,7 @@ namespace InterpreterTest
             return result;
         }
 
-        public bool CheckVariable(string varName)
+        public bool IsVariable(string varName)
         {
             bool result = false;
             if (INT.ContainsKey(varName))
@@ -75,62 +75,60 @@ namespace InterpreterTest
             return result;
         }
 
-        public void setValue(string varName, string value)
+        internal void AssignVariable(string varName, dynamic literal)
         {
-            if(!CheckVariable(varName))
+            if (IsVariable(varName))
             {
-                throw new InvalidOperationException($"Variable {varName} doesn't exist.");
+                if (literal is int)
+                {
+                    INT[varName] = literal;
+                }
+                else if (literal is float)
+                {
+                    FLOAT[varName] = literal;
+                }
+                else if (literal is char)
+                {
+                    CHAR[varName] = literal;
+                }
+                else if (literal is bool)
+                {
+                    BOOL[varName] = literal;
+                }
             }
+        }
 
-            if(INT.ContainsKey(varName)) 
+        public dynamic findVariableToExpression(string varName)
+        {
+            dynamic result;
+            if (INT.ContainsKey(varName))
             {
-               if(int.TryParse(value, out int intValue))
-                {
-                    INT[varName] = intValue;
-                }
-               else
-                {
-                    throw new ArgumentException("Value must be of type INT");
-                }
+                result = INT[varName];
             }
             else if (FLOAT.ContainsKey(varName))
             {
-                if (float.TryParse(value, out float floatValue))
+                result = FLOAT[varName];
+            }
+            else if (BOOL.ContainsKey(varName))
+            {
+                if (BOOL[varName])
                 {
-                    FLOAT[varName] = floatValue;
+                    result = true;
                 }
                 else
                 {
-                    throw new ArgumentException("Value must be of type FLOAT");
+                    result = false;
                 }
             }
             else if (CHAR.ContainsKey(varName))
             {
-                if (char.TryParse(value, out char charValue))
-                {
-                    CHAR[varName] = charValue;
-                }
-                else
-                {
-                    throw new ArgumentException("Value must be of type CHAR");
-                }
-            }
-            else if (BOOL.ContainsKey(varName))
-            {
-                if (bool.TryParse(value, out bool boolValue))
-                {
-                    BOOL[varName] = boolValue;
-                }
-                else
-                {
-                    throw new ArgumentException("Value must be of type BOOL");
-                }
+                result = CHAR[varName];
             }
             else
             {
                 throw new InvalidOperationException($"{varName} doesn't exist");
             }
+            return result;
         }
-        
     }
 }

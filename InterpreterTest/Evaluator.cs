@@ -54,44 +54,10 @@ namespace InterpreterTest
                     }
                     _position++;
                 }
-                else if (currNode is VariableAssignmentNode variableAssignmentNode)
+                else if (currNode is VariableAssignmentNode2 variableAssignmentNode)
                 {
-                    
-                    string varName = variableAssignmentNode._varName;
-                    string literal = variableAssignmentNode._literal;
-                    string literalType = variableAssignmentNode._literalType;
-
-                    if (!(_symbolStorage.CheckVariable(varName)))
-                    {
-                        throw new InvalidOperationException($"Variable: '{varName}' doesn't exist");
-                    }
-
-                    switch (literalType)
-                    {
-                        case "NUMBER":
-                            //string to int
-                            _symbolStorage.INT[varName] = int.Parse(literal);
-                            Console.WriteLine("Added INT " + literal + " to " + varName);
-                            break;
-                        case "LETTER":
-                            //string to char
-                            _symbolStorage.CHAR[varName] = literal[0];
-                            Console.WriteLine("Added CHAR " + literal + " to " + varName);
-                            break;
-                        case "TRUE":
-                            _symbolStorage.BOOL[varName] = true;
-                            Console.WriteLine("Added BOOL " + literal + " to " + varName);
-                            break;
-                        case "FALSE":
-                            _symbolStorage.BOOL[varName] = false;
-                            Console.WriteLine("Added BOOL " + literal + " to " + varName);
-                            break;
-                        case "DECIMAL_NUMBER":
-                            //string to float
-                            _symbolStorage.FLOAT[varName] = float.Parse(literal);
-                            Console.WriteLine("Added FLOAT " + literal + " to " + varName);
-                            break;
-                    }
+                    Console.WriteLine(variableAssignmentNode);
+                    variableAssignmentNode.eval(_symbolStorage);
                     _position++;
                 }
                 else if (currNode is DisplayNode displayNode)

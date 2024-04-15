@@ -51,6 +51,7 @@ namespace InterpreterTest
             NUMBER,         // 22
             DECIMAL_NUMBER, // 345.3
             STRING,         // "Ola"
+
             //Keywords
 
             //DataTypes
