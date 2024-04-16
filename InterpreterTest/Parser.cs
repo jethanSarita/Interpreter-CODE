@@ -788,7 +788,8 @@ namespace InterpreterTest
 
             _position++;
 
-            List<ScanNode> scans = new List<ScanNode>();
+            List<ASTNode> scans = new List<ASTNode>();
+            List<string> varNames = new List<string>();
 
             while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
             {
@@ -798,10 +799,13 @@ namespace InterpreterTest
                 {
                     case TokenType.IDENTIFIER:
                         scans.Add(new ScannedIdentifierNode(currToken.Value));
+                        varNames.Add(currToken.Value);
                         break;
 
-                    //should I add for bool
-                    //i dont think i need it
+                    //skip comma, then continue parsing still
+                    case TokenType.COMMA:
+                        _position++;
+                        continue; 
 
                     default:
                         throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid token in SCAN statement");
@@ -811,16 +815,10 @@ namespace InterpreterTest
                 {
                     //scans.Add()
                 }
-
                 _position++;
-
-                //if there is comma then there is another pa
-                if (_tokens[_position].Type == TokenType.COMMA)
-                {
-                    _position++;
-                }
             }
             _position++;
+
             return new ScanStatementNode(scans);
         }
 
