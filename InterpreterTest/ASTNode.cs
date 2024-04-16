@@ -45,15 +45,25 @@ namespace InterpreterTest
 
         public VariableAssignmentNode2(string varName, ExpressionNode expressionNode)
         {
-            _varName = varName;
-            _expressionNode = expressionNode;
+            _varName = varName ?? throw new ArgumentNullException(nameof(varName));
+            _expressionNode = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
         }
 
         public void eval(SymbolStorage symbolStorage)
         {
-            symbolStorage.AssignVariable(_varName, _expressionNode.eval(symbolStorage));
+            if (_expressionNode != null)
+            {
+                dynamic result = _expressionNode.eval(symbolStorage);
+                symbolStorage.AssignVariable(_varName, result);
+            }
+            else
+            {
+                throw new InvalidOperationException("ExpressionNode is not initialized.");
+            }
         }
     }
+
+
 
     internal class VariableAssignmentNode : ASTNode
     {
