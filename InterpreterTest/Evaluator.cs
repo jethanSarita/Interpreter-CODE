@@ -64,6 +64,13 @@ namespace InterpreterTest
                     result += displayNode.eval(_symbolStorage);
                     _position++;
                 }
+                else if (currNode is ScanStatementNode scanStatementNode)
+                {
+                    foreach (ScanNode node in scanStatementNode.Scans)
+                    {
+
+                    }
+                }
             }
             return result;
         }

@@ -785,30 +785,31 @@ namespace InterpreterTest
             {
                 throw new InvalidOperationException($"Error at line {_lineCounter}: Expected ':' after SCAN statement");
             }
+
             _position++;
 
-            List<ASTNode> scans = new List<ASTNode>();
+            List<ScanNode> scans = new List<ScanNode>();
+
             while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
             {
                 Token currToken = _tokens[_position];
 
-                switch (currToken.Type)
+                /*switch (currToken.Type)
                 {
-                    //case TokenType.STRING:
-                    //    scans.Add(new StringLiteralNode(currToken.Value));
-                    //    break;
-                    //
-                    //case TokenType.NUMBER:
-                    //    scans.Add(new NumberLiteralNode(currToken.Value));
-                    //    break;
                     case TokenType.IDENTIFIER:
                         scans.Add(new ScannedIdentifierNode(currToken.Value));
                         break;
 
-                    //should I add for bool    
+                    //should I add for bool
+                    //i dont think i need it
 
                     default:
                         throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid token in SCAN statement");
+                }*/
+
+                if (currToken.Type == TokenType.IDENTIFIER)
+                {
+                    //scans.Add()
                 }
 
                 _position++;

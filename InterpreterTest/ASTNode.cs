@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -311,11 +312,15 @@ namespace InterpreterTest
         }
     }
 
+    internal abstract class ScanNode : ASTNode
+    {
+        public abstract void TempFunc();
+    }
     internal class ScanStatementNode : ASTNode
     {
-        public List<ASTNode> Scans { get; }
+        public List<ScanNode> Scans { get; }
 
-        public ScanStatementNode(List<ASTNode> scans)
+        public ScanStatementNode(List<ScanNode> scans)
         {
             Scans = scans;
         }
