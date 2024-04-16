@@ -562,7 +562,6 @@ namespace InterpreterTest
             // parse first term
             ExpressionNode left = ParseTerm();
 
-
             // continue parsing other terms and create nodes
             // + and - as parents and other terms as children
             while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-"))
@@ -650,7 +649,7 @@ namespace InterpreterTest
         {
             if (_position < _tokens.Count && _tokens[_position].Type == type)
             {
-                _position++;
+
             }
             else
             {

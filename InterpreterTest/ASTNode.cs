@@ -260,6 +260,9 @@ namespace InterpreterTest
                 case "FALSE":
                     result = false;
                     break;
+                case "IDENTIFIER":
+                    result = symbolStorage.findVariableToExpression(_literal);
+                    break;
             }
             return result;
         }
