@@ -134,6 +134,10 @@ namespace InterpreterTest
                     }
                 }
                 //[Identifier][Equals]([Literal] + [Expression])
+                else if (currentToken.Type == TokenType.SCAN)
+                {
+                    statements.Add(ParseScanStatement());
+                }
                 else if (currentToken.Type == TokenType.IDENTIFIER)
                 {
                     statements.Add(ParseVariableAssignment());
@@ -167,10 +171,7 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseDisplayStatement());
                 }
-                else if (currentToken.Type == TokenType.SCAN)
-                {
-                    statements.Add(ParseScanStatement());
-                }             
+                         
                 else if (currentToken.Type == TokenType.LINE_SEPARATOR)
                 {
                     _lineCounter++;
@@ -795,7 +796,7 @@ namespace InterpreterTest
             {
                 Token currToken = _tokens[_position];
 
-                /*switch (currToken.Type)
+                switch (currToken.Type)
                 {
                     case TokenType.IDENTIFIER:
                         scans.Add(new ScannedIdentifierNode(currToken.Value));
@@ -805,19 +806,18 @@ namespace InterpreterTest
                     //skip comma, then continue parsing still
                     case TokenType.COMMA:
                         _position++;
-                        continue; 
+                        continue;
 
                     default:
                         throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid token in SCAN statement");
-                }*/
+                }
 
-                if (currToken.Type == TokenType.IDENTIFIER)
+                /*if (currToken.Type == TokenType.IDENTIFIER)
                 {
                     //scans.Add()
-                }
+                }*/
                 _position++;
             }
-            _position++;
 
             return new ScanStatementNode(scans);
         }

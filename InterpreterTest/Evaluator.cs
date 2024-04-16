@@ -68,27 +68,29 @@ namespace InterpreterTest
                 }
                 else if (currNode is ScanStatementNode scanNode)
                 {
-                    foreach(ASTNode scanItem  in scanNode.Scans)
+                    int currentInput = 0;
+
+                    Console.WriteLine("Input: ");
+                    string input = Console.ReadLine();
+
+                    string[] inputValues = input.Split(',');
+
+                    if (inputValues.Length != scanNode.Scans.Count)
+                    {
+                        throw new InvalidOperationException(
+                            $"Error: Expected {scanNode.Scans.Count} values, but received {inputValues.Length}");
+                    }
+
+                    foreach (ASTNode scanItem in scanNode.Scans)
                     {
                         if(scanItem is ScannedIdentifierNode identifierNode)
                         {
                             //Console.WriteLine($"Enter value for {identifierNode.varName}: ");
-                            string input = _form1.getText();
-
-                            string[] inputValues = input.Split(',');
-
-                            if(inputValues.Length != scanNode.Scans.Count)
-                            {
-                                throw new InvalidOperationException(
-                                    $"Error: Expected {scanNode.Scans.Count} values, but received {inputValues.Length}");
-                            }
-
-                            for(int i = 0; i < scanNode.Scans.Count; i++)
-                            {
-                                _symbolStorage.setValue(identifierNode.varName, inputValues[i].Trim());
-                            }
+                            _symbolStorage.SetValue(identifierNode.varName, inputValues[currentInput].Trim());
+                            currentInput++;
                         }
-                    }                                    
+                    }
+                    _position++;
                 }
             }
             return result;

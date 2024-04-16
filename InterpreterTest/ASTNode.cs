@@ -312,15 +312,16 @@ namespace InterpreterTest
         }
     }
 
-    internal abstract class ScanNode : ASTNode
+    /*internal abstract class ScanNode : ASTNode
     {
         public abstract void TempFunc();
-    }
+    }*/
+
     internal class ScanStatementNode : ASTNode
     {
-        public List<ScanNode> Scans { get; }
+        public List<ASTNode> Scans { get; }
 
-        public ScanStatementNode(List<ScanNode> scans)
+        public ScanStatementNode(List<ASTNode> scans)
         {
             Scans = scans;
         }
