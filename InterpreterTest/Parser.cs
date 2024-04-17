@@ -134,6 +134,10 @@ namespace InterpreterTest
                     }
                 }
                 //[Identifier][Equals]([Literal] + [Expression])
+                else if (currentToken.Type == TokenType.SCAN)
+                {
+                    statements.Add(ParseScanStatement());
+                }
                 else if (currentToken.Type == TokenType.IDENTIFIER)
                 {
                     statements.Add(ParseVariableAssignment());
@@ -167,10 +171,7 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseDisplayStatement());
                 }
-                else if (currentToken.Type == TokenType.SCAN)
-                {
-                    statements.Add(ParseScanStatement());
-                }
+                         
                 else if (currentToken.Type == TokenType.LINE_SEPARATOR)
                 {
                     _lineCounter++;
@@ -781,41 +782,39 @@ namespace InterpreterTest
             {
                 throw new InvalidOperationException($"Error at line {_lineCounter}: Expected ':' after SCAN statement");
             }
+
             _position++;
 
             List<ASTNode> scans = new List<ASTNode>();
+            List<string> varNames = new List<string>();
+
             while (_tokens[_position].Type != TokenType.LINE_SEPARATOR)
             {
                 Token currToken = _tokens[_position];
 
                 switch (currToken.Type)
                 {
-                    //case TokenType.STRING:
-                    //    scans.Add(new StringLiteralNode(currToken.Value));
-                    //    break;
-                    //
-                    //case TokenType.NUMBER:
-                    //    scans.Add(new NumberLiteralNode(currToken.Value));
-                    //    break;
                     case TokenType.IDENTIFIER:
                         scans.Add(new ScannedIdentifierNode(currToken.Value));
+                        varNames.Add(currToken.Value);
                         break;
 
-                    //should I add for bool    
+                    //skip comma, then continue parsing still
+                    case TokenType.COMMA:
+                        _position++;
+                        continue;
 
                     default:
                         throw new InvalidOperationException($"Error at line {_lineCounter}: Invalid token in SCAN statement");
                 }
 
-                _position++;
-
-                //if there is comma then there is another pa
-                if (_tokens[_position].Type == TokenType.COMMA)
+                /*if (currToken.Type == TokenType.IDENTIFIER)
                 {
-                    _position++;
-                }
+                    //scans.Add()
+                }*/
+                _position++;
             }
-            _position++;
+
             return new ScanStatementNode(scans);
         }
 

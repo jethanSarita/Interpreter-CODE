@@ -75,7 +75,7 @@ namespace InterpreterTest
             return result;
         }
 
-        internal void AssignVariable(string varName, dynamic literal)
+        public void AssignVariable(string varName, dynamic literal)
         {
             if (IsVariable(varName))
             {
@@ -97,6 +97,64 @@ namespace InterpreterTest
                 }
             }
         }
+
+        public void SetValue(string varName, string value)
+        {
+            if (!IsVariable(varName))
+            {
+                throw new InvalidOperationException($"Variable {varName} doesn't exist.");
+            }
+
+            if (INT.ContainsKey(varName))
+            {
+                if (int.TryParse(value, out int intValue))
+                {
+                    INT[varName] = intValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type INT");
+                }
+            }
+            else if (FLOAT.ContainsKey(varName))
+            {
+                if (float.TryParse(value, out float floatValue))
+                {
+                    FLOAT[varName] = floatValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type FLOAT");
+                }
+            }
+            else if (CHAR.ContainsKey(varName))
+            {
+                if (char.TryParse(value, out char charValue))
+                {
+                    CHAR[varName] = charValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type CHAR");
+                }
+            }
+            else if (BOOL.ContainsKey(varName))
+            {
+                if (bool.TryParse(value, out bool boolValue))
+                {
+                    BOOL[varName] = boolValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Value must be of type BOOL");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"{varName} doesn't exist");
+            }
+        }
+
 
         public dynamic findVariableToExpression(string varName)
         {

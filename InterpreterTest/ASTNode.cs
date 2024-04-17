@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -310,6 +311,11 @@ namespace InterpreterTest
             this.varName = varName;
         }
     }
+
+    /*internal abstract class ScanNode : ASTNode
+    {
+        public abstract void TempFunc();
+    }*/
 
     internal class ScanStatementNode : ASTNode
     {
