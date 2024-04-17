@@ -23,7 +23,7 @@ namespace InterpreterTest
             "DISPLAY", "SCAN", "IF", "ELSE", "WHILE", "AND", "OR", "NOT"
         };
 
-        
+
 
         public Parser(List<Token> tokens)
         {
@@ -170,13 +170,13 @@ namespace InterpreterTest
                 else if (currentToken.Type == TokenType.SCAN)
                 {
                     statements.Add(ParseScanStatement());
-                }             
+                }
                 else if (currentToken.Type == TokenType.LINE_SEPARATOR)
                 {
                     _lineCounter++;
                 }
                 _position++;
-            }            
+            }
             if (_insideCodeBlock)
             {
                 throw new Exception($"Error at line {_lineCounter}: Expected 'END CODE'");
@@ -564,7 +564,10 @@ namespace InterpreterTest
 
             // continue parsing other terms and create nodes
             // + and - as parents and other terms as children
-            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-"))
+            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-" ||
+                                        Peek(1).Value == "<" || Peek(1).Value == ">" ||
+                                        Peek(1).Value == "<=" || Peek(1).Value == ">=" ||
+                                        Peek(1).Value == "==" || Peek(1).Value == "<>"))
             {
                 Token opToken = NextToken(); 
                 ExpressionNode right = ParseTerm(); 
@@ -582,7 +585,7 @@ namespace InterpreterTest
 
             // continue parsing other factors and create nodes
             // * and / as parents and other factors as children
-            while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/"))
+            while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/" || Peek(1).Value == "%"))
             {
                 Token opToken = NextToken(); 
                 ExpressionNode right = ParseFactor(); 
@@ -605,17 +608,10 @@ namespace InterpreterTest
             // if current token is open paren, parse expression inside the parenthesis
             else if (token.Type == TokenType.LEFT_PAREN)
             {
-                try
-                {
                     ExpressionNode expression = ParseExpression();
                     _position++;
                     Consume(TokenType.RIGHT_PAREN);
                     return expression;
-                }
-                catch
-                {
-                    throw new InvalidOperationException("Expected token of type RIGHT_PAREN, but found " + Peek(0).Type + ", Token Value: " + Peek(0).Value);
-                }
             }
             // if naay equals, parse the expression on the right side of equals
             else if (token.Type == TokenType.EQUAL)
