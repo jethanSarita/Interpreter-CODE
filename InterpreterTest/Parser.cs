@@ -564,7 +564,7 @@ namespace InterpreterTest
             ExpressionNode left = ParseTerm();
 
             // continue parsing other terms and create nodes
-            // + and - as parents and other terms as children
+            // +, -, <, >, <=, >=, ==, and <> as parents and other terms as children
             while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-" ||
                                         Peek(1).Value == "<" || Peek(1).Value == ">" ||
                                         Peek(1).Value == "<=" || Peek(1).Value == ">=" ||
@@ -585,7 +585,7 @@ namespace InterpreterTest
             ExpressionNode left = ParseFactor();
 
             // continue parsing other factors and create nodes
-            // * and / as parents and other factors as children
+            // *, /, and % as parents and other factors as children
             while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/" || Peek(1).Value == "%"))
             {
                 Token opToken = NextToken(); 
