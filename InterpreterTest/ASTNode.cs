@@ -327,4 +327,19 @@ namespace InterpreterTest
         }
 
     }
+
+    internal class ConditionalNode : ASTNode
+    {
+        public ExpressionNode Condition { get; }
+        public List<ASTNode> IfStatements { get; }
+        public List<ASTNode> ElseStatements { get; }
+
+        public ConditionalNode(ExpressionNode condition, List<ASTNode> ifStatements, List<ASTNode> elseStatements)
+        {
+            Condition = condition ?? throw new ArgumentNullException(nameof(condition));
+            IfStatements = ifStatements ?? throw new ArgumentNullException(nameof(ifStatements));
+            ElseStatements = elseStatements ?? throw new ArgumentNullException(nameof(elseStatements));
+        }
+    }
+
 }
