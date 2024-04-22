@@ -57,6 +57,11 @@ namespace InterpreterTest
 
                 //[DataType][Identifier] + ([Comma][Identifier])* + [Equals][Literal]
 
+                if (currentToken.Type == TokenType.IF)
+                {
+                    statements.Add(ParseConditional());
+                }
+
                 //Check if datatype
                 if (
                     currentToken.Type == TokenType.INT ||
@@ -602,9 +607,19 @@ namespace InterpreterTest
             Token token = NextToken();
 
             // if token is a literal, create a literal node in the AST
-            if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER || token.Type == TokenType.IDENTIFIER)
+            if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER)
             {
                 return new ExpressionLiteral(token.Value, token.Type.ToString());
+            }
+            // if current token is a boolean literal
+            else if (token.Type == TokenType.TRUE || token.Type == TokenType.FALSE)
+            {
+                return new ExpressionLiteral(token.Value, token.Type.ToString());
+            }
+            // if current token is an identifier, create an expression variable node
+            else if (token.Type == TokenType.IDENTIFIER)
+            {
+                return new ExpressionVariable(token.Value);
             }
             // if current token is open paren, parse expression inside the parenthesis
             else if (token.Type == TokenType.LEFT_PAREN)
@@ -642,15 +657,110 @@ namespace InterpreterTest
         }
 
         // if next token matches argument advance position in the token stream
+        
         private void Consume(TokenType type)
         {
             if (_position < _tokens.Count && _tokens[_position].Type == type)
             {
-
+                
             }
             else
             {
                 throw new InvalidOperationException($"Expected token of type {type}, but found {_tokens[_position].Type}.");
+            }
+        }
+        private void Consume_then_Move(TokenType type)
+        {
+            if (_position < _tokens.Count && _tokens[_position].Type == type)
+            {
+                // Advance the position to consume the token
+                _position++;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Expected token of type {type}, but found {_tokens[_position].Type}.");
+            }
+        }
+
+        private ASTNode ParseConditional()
+        {
+            TokenType nextTokenType = Peek(0).Type;
+            TokenType nextnextTokenType = Peek(1).Type;
+
+            try
+            {
+                if (nextTokenType == TokenType.IF)
+                {
+                    // Consume the "IF" keyword.
+                    Consume_then_Move(TokenType.IF);
+
+                    Consume_then_Move(TokenType.LEFT_PAREN);
+                    // Parse the boolean expression inside the parentheses.
+                    ExpressionNode condition = ParseExpression();
+                    Consume_then_Move(TokenType.RIGHT_PAREN);
+
+                    // Consume the "BEGIN" keyword.
+                    Consume_then_Move(TokenType.BEGIN);
+
+                    // Parse the statements inside the IF block.
+                    List<ASTNode> ifStatements = new List<ASTNode>();
+                    while (Peek(0).Type != TokenType.END)
+                    {
+                        ASTNode statement = Parse();
+                        ifStatements.Add(statement);
+                    }
+
+                    // Consume the "END IF" keywords.
+                    Consume_then_Move(TokenType.END);
+                    Consume_then_Move(TokenType.IF);
+
+                    // Check if there is an ELSE part.
+                    if (Peek(0).Type == TokenType.ELSE && Peek(1).Type == TokenType.IF)
+                    {
+                        // Consume the "ELSE IF" keywords.
+                        Consume_then_Move(TokenType.ELSE);
+                        Consume_then_Move(TokenType.IF);
+
+                        // Parse the conditional block for ELSE IF.
+                        ConditionalNode elseIfConditional = (ConditionalNode)ParseConditional();
+
+                        // Create the ConditionalNode for ELSE IF.
+                        return new ConditionalNode(condition, ifStatements, new List<ASTNode> { elseIfConditional });
+                    }
+                    else if (Peek(0).Type == TokenType.ELSE)
+                    {
+                        // Consume the "ELSE" keyword.
+                        Consume_then_Move(TokenType.ELSE);
+
+                        // Parse the statements inside the ELSE block.
+                        List<ASTNode> elseStatements = new List<ASTNode>();
+                        while (Peek(0).Type != TokenType.END)
+                        {
+                            ASTNode statement = Parse();
+                            elseStatements.Add(statement);
+                        }
+
+                        // Consume the "END IF" keywords.
+                        Consume_then_Move(TokenType.END);
+                        Consume_then_Move(TokenType.IF);
+
+                        // Create the ConditionalNode for IF-ELSE.
+                        return new ConditionalNode(condition, ifStatements, elseStatements);
+                    }
+                    else
+                    {
+                        // No ELSE part.
+                        return new ConditionalNode(condition, ifStatements, new List<ASTNode>());
+                    }
+                }
+                else
+                {
+                    throw new Exception("Invalid conditional statement.");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Found {_tokens[_position].Type}.");
             }
         }
 
