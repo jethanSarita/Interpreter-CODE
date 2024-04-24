@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ASTNode.cs" />
+    <Compile Include="DebugTings.cs" />
     <Compile Include="Evaluator.cs" />
     <Compile Include="LineNumberRTB.cs">
       <SubType>UserControl</SubType>

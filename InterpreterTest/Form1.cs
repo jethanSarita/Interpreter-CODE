@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Runtime.ExceptionServices;
 
 namespace InterpreterTest
 {
     public partial class Form1 : Form
     {
-
+        private ExceptionDispatchInfo _exInfo;
         bool secretButtonPressed = false;
         bool secretButtonPressed2 = false;        
 
@@ -54,6 +55,9 @@ namespace InterpreterTest
                 ProgramNode ast = parser.Parse();
                 lblOutput2.Text = "the parser is parsing";
 
+                Console.WriteLine("*************************************************");
+                DebugTings.print(ast);
+
                 //troubleshooting
                 foreach (ASTNode node in ast.Statements)
                 {
@@ -93,6 +97,7 @@ namespace InterpreterTest
             }
             catch (Exception exception)
             {
+                _exInfo = ExceptionDispatchInfo.Capture(exception);
                 string text = "";
                 if (exception is StackOverflowException ashh)
                 {

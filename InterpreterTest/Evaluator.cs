@@ -13,6 +13,7 @@ namespace InterpreterTest
         private int _position;
         private SymbolStorage _symbolStorage;
         private Form1 _form1;
+        private String result = "";
 
         public Evaluator(ProgramNode ast, SymbolStorage symbolStorage, Form1 form1)
         {
@@ -24,7 +25,7 @@ namespace InterpreterTest
 
         public string Evaluate()
         {
-            string result = "";
+            result = "";
             while (_position < _ast.Count)
             {
                 ASTNode currNode = _ast[_position];
@@ -38,7 +39,7 @@ namespace InterpreterTest
                 }
                 else if (currNode is DisplayNode displayNode)
                 {
-                    result += HandleDisplayNode(displayNode);
+                    HandleDisplayNode(displayNode);
                 }
                 else if (currNode is ScanStatementNode scanNode)
                 {
@@ -46,16 +47,7 @@ namespace InterpreterTest
                 }
                 else if (currNode is ConditionalNode conditionalNode)
                 {
-                    bool conditionResult = conditionalNode.Condition.eval(_symbolStorage);
-
-                    if (conditionResult)
-                    {
-                        EvaluateConditionalStatements(conditionalNode.IfStatements);
-                    }
-                    else
-                    {
-                        EvaluateConditionalStatements(conditionalNode.ElseStatements);
-                    }
+                    EvaluateConditional(conditionalNode);
                 }
 
                 _position++;
@@ -97,10 +89,10 @@ namespace InterpreterTest
         }
 
         // Helper method to handle display statement
-        private string HandleDisplayNode(DisplayNode displayNode)
+        private void HandleDisplayNode(DisplayNode displayNode)
         {
             Console.WriteLine(displayNode);
-            return displayNode.eval(_symbolStorage);
+            result += displayNode.eval(_symbolStorage);
         }
 
         // Helper method to handle scan statement
@@ -130,20 +122,33 @@ namespace InterpreterTest
             }
         }
 
-        // Helper method to evaluate conditional statements
+        private void EvaluateConditional(ConditionalNode conditional)
+        {
+            bool conditionResult = conditional.isAlwaysTrue || conditional.Condition.eval(_symbolStorage);
+
+            if (conditionResult)
+            {
+                EvaluateConditionalStatements(conditional.IfStatements);
+            }
+            else
+            {
+                EvaluateConditional(conditional.ElseStatements);
+            }
+        }
+
         private void EvaluateConditionalStatements(List<ASTNode> statements)
         {
             foreach (ASTNode statement in statements)
             {
+                DebugTings.print(statement);
+                Console.WriteLine("evaluating statement in conditional " + statement.name);
                 if (statement is ConditionalNode conditionalNode)
                 {
-                    // Recursively evaluate nested conditional statements
                     EvaluateConditionalStatements(conditionalNode.IfStatements);
-                    EvaluateConditionalStatements(conditionalNode.ElseStatements);
+                    EvaluateConditionalStatements(conditionalNode.ElseStatements.IfStatements);
                 }
                 else
                 {
-                    // Handle other types of statements
                     if (statement is VariableDeclarationNode variableDeclarationNode)
                     {
                         HandleVariableDeclaration(variableDeclarationNode);
@@ -154,7 +159,10 @@ namespace InterpreterTest
                     }
                     else if (statement is DisplayNode displayNode)
                     {
+                        Console.WriteLine("no error encountered before - display");
+                        _symbolStorage.PrintAll();
                         HandleDisplayNode(displayNode);
+                        Console.WriteLine("no error encountered after - display");
                     }
                     else if (statement is ScanStatementNode scanNode)
                     {
