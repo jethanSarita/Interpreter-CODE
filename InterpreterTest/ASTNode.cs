@@ -28,12 +28,14 @@ namespace InterpreterTest
     {
         public String _dataType { get; }
         public String _varName { get; }
+        //public VariableAssignmentNode2 _varAssign { get; }
 
 
         public VariableDeclarationNode(string dataType, string varName)
         {
             _dataType = dataType;
             _varName = varName;
+            //_varAssign = varAssign;
             name = "VarDeclare";
     }
 
@@ -363,6 +365,21 @@ namespace InterpreterTest
             IfStatements = ifStatements;
             ElseStatements = elseStatements;
             name = "Conditional";
+        }
+    }
+
+    internal class LoopNode : ASTNode
+    {
+        public ExpressionNode LoopCondition { get; set; }
+        public List<ASTNode> LoopStatements { get; set; }
+        public LoopNode NestedLoop { get; set; }
+
+        public LoopNode(ExpressionNode loopCondition, List<ASTNode> loopStatements, LoopNode nestedLoop)
+        {
+            LoopCondition = loopCondition;
+            LoopStatements = loopStatements;
+            NestedLoop = nestedLoop;
+            name = "Loop";
         }
     }
 

@@ -68,6 +68,9 @@ namespace InterpreterTest
             IF,             // "IF"
             ELSE,           // "ELSE"
 
+            //Looping tings
+            WHILE,          // "WHILE"
+
             //Logic Operators
             NOT,            // "NOT"
             AND,            // "AND"

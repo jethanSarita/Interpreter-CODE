@@ -95,6 +95,11 @@ namespace InterpreterTest
                             case "SCAN":
                                 tokens.Add(new Token(Token.TokenType.SCAN, data));
                                 break;
+                            case "WHILE":
+                                tokens.Add(new Token(Token.TokenType.WHILE, data));
+                                break;
+                            case "JOSH":
+                                throw new StackOverflowException("Cannot tokenize a small value.");
                             case "ASH":
                                 throw new StackOverflowException("I love you Ashh.. (- 3 -) <3 <3 <3");
                         }
