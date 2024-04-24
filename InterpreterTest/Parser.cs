@@ -23,7 +23,7 @@ namespace InterpreterTest
             "DISPLAY", "SCAN", "IF", "ELSE", "WHILE", "AND", "OR", "NOT"
         };
 
-        
+
 
         public Parser(List<Token> tokens)
         {
@@ -51,11 +51,17 @@ namespace InterpreterTest
                 Console.WriteLine("Current Token: " + currentToken);
                 if (currentToken.Type == TokenType.END && Peek(1) != null && Peek(1).Type == TokenType.CODE)
                 {
+                    Console.WriteLine("no end code--------------------------------------------------------------------");
                     _insideCodeBlock = false;
                     break;
                 }
 
                 //[DataType][Identifier] + ([Comma][Identifier])* + [Equals][Literal]
+
+                if (currentToken.Type == TokenType.IF)
+                {
+                    statements.Add(ParseConditional());
+                }
 
                 //Check if datatype
                 if (
@@ -171,18 +177,132 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseDisplayStatement());
                 }
-                         
+
                 else if (currentToken.Type == TokenType.LINE_SEPARATOR)
                 {
                     _lineCounter++;
                 }
                 _position++;
-            }            
+            }
             if (_insideCodeBlock)
             {
                 throw new Exception($"Error at line {_lineCounter}: Expected 'END CODE'");
             }
             return new ProgramNode(statements);
+        }
+
+        public List<ASTNode> ParseStatements()
+        {
+            Token currentToken = _tokens[_position];
+            var statements = new List<ASTNode>();
+            while (Peek(0).Type != TokenType.END)
+            {
+                currentToken = _tokens[_position];
+                Console.WriteLine("Current Token: " + currentToken);
+
+                if (currentToken.Type == TokenType.IF)
+                {
+                    statements.Add(ParseConditional());
+                }
+
+                //Check if datatype
+                if (
+                    currentToken.Type == TokenType.INT ||
+                    currentToken.Type == TokenType.CHAR ||
+                    currentToken.Type == TokenType.FLOAT ||
+                    currentToken.Type == TokenType.BOOL
+                   )
+                {
+                    Token dataType = currentToken;
+                    _position++;
+                    while (_position < _tokens.Count)
+                    {
+                        currentToken = _tokens[_position];
+                        if (currentToken.Type == TokenType.IDENTIFIER)
+                        {
+                            //Initialize Variable
+                            statements.Add(ParseVariableDeclaration(dataType, currentToken));
+                            //Check if following Token is not null
+                            if (Peek(1) != null)
+                            {
+                                //Not null, check if its equal sign
+                                if (Peek(1).Type == TokenType.EQUAL)
+                                {
+                                    //It's equal, check if following is a literal
+                                    if (IsLiteral(Peek(2)))
+                                    {
+                                        //It's a literal, check compatibility and add VariableAssignementNode
+                                        statements.Add(TypeCompatibility(dataType, currentToken, Peek(2)));
+                                        _position += 2;
+                                    }
+                                    else
+                                    {
+                                        //Not a literal, throw error
+                                        throw new InvalidOperationException($"Error at line {_lineCounter}: '{dataType.Value} {currentToken.Value} {Peek(2).Value}' <--- Is invalid");
+                                    }
+                                }
+
+                                //Not null, may or may not had prior assignment operation, check comma
+                                if (Peek(1).Type == TokenType.COMMA)
+                                {
+                                    //Is comma, check if following is not null
+                                    if (Peek(2) != null)
+                                    {
+                                        //Not null, check if following identifier
+                                        if (Peek(2).Type == TokenType.IDENTIFIER)
+                                        {
+                                            //Is identifier,
+                                            _position += 2;
+                                        }
+                                        else
+                                        {
+                                            //Not identifier, throw error
+                                            throw new InvalidOperationException($"Error at line {_lineCounter}: ...'{Peek(1).Value} {Peek(2).Value}' <--- Not an identifier");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Is null, throw error
+                                        throw new InvalidOperationException($"Error at line {_lineCounter}: ...'{currentToken.Value}{Peek(1).Value}' <--- No follow up");
+                                    }
+
+                                }
+                                else
+                                {
+                                    //no comma, means end of variable declaration and/or assignment
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                //Is null, throw error
+                                throw new InvalidOperationException($"Error at line {_lineCounter}: '{dataType.Value} {currentToken.Value}' <--- Missing code follow up, check if within CODE block");
+                            }
+                        }
+                    }
+                }
+                //[Identifier][Equals]([Literal] + [Expression])
+                else if (currentToken.Type == TokenType.SCAN)
+                {
+                    statements.Add(ParseScanStatement());
+                }
+                else if (currentToken.Type == TokenType.IDENTIFIER)
+                {
+                    statements.Add(ParseVariableAssignment());
+                }
+                //[Display][Colon][{contents}]
+                else if (currentToken.Type == TokenType.DISPLAY)
+                {
+                    statements.Add(ParseDisplayStatement());
+                }
+
+                else if (currentToken.Type == TokenType.LINE_SEPARATOR)
+                {
+                    _lineCounter++;
+                }
+                _position++;
+            }
+            return statements;
         }
 
         private bool IsOperator(Token token)
@@ -562,16 +682,18 @@ namespace InterpreterTest
         {
             // parse first term
             ExpressionNode left = ParseTerm();
-
             // continue parsing other terms and create nodes
-            // + and - as parents and other terms as children
-            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-"))
+            // +, -, <, >, <=, >=, ==, and <> as parents and other terms as children
+            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-" ||
+                                        Peek(1).Value == "<" || Peek(1).Value == ">" ||
+                                        Peek(1).Value == "<=" || Peek(1).Value == ">=" ||
+                                        Peek(1).Value == "==" || Peek(1).Value == "<>"))
             {
-                Token opToken = NextToken(); 
-                ExpressionNode right = ParseTerm(); 
-                left = new ExpressionBinary(left, right, opToken.Value); 
-            }
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseTerm();
+                left = new ExpressionBinary(left, right, opToken.Value);
 
+            }
             return left;
         }
 
@@ -582,11 +704,11 @@ namespace InterpreterTest
             ExpressionNode left = ParseFactor();
 
             // continue parsing other factors and create nodes
-            // * and / as parents and other factors as children
-            while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/"))
+            // *, /, and % as parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/" || Peek(1).Value == "%"))
             {
-                Token opToken = NextToken(); 
-                ExpressionNode right = ParseFactor(); 
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseFactor();
                 left = new ExpressionBinary(left, right, opToken.Value);
             }
 
@@ -596,31 +718,42 @@ namespace InterpreterTest
         // parse factors into nodes for evaluation
         private ExpressionNode ParseFactor()
         {
-            Token token = NextToken();
+            Console.WriteLine("no error encountered, gwapo ka1");
+            Token token = GetNextToken();
+            Console.WriteLine("token is " + token.Type);
 
             // if token is a literal, create a literal node in the AST
-            if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER || token.Type == TokenType.IDENTIFIER)
+            if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER)
             {
+                Console.WriteLine("no error encountered, gwapo ka3");
                 return new ExpressionLiteral(token.Value, token.Type.ToString());
+            }
+            // if current token is a boolean literal
+            else if (token.Type == TokenType.TRUE || token.Type == TokenType.FALSE)
+            {
+                Console.WriteLine("no error encountered, gwapo ka4");
+                return new ExpressionLiteral(token.Value, token.Type.ToString());
+            }
+            // if current token is an identifier, create an expression variable node
+            else if (token.Type == TokenType.IDENTIFIER)
+            {
+                Console.WriteLine("no error encountered, gwapo ka5");
+                return new ExpressionVariable(token.Value);
             }
             // if current token is open paren, parse expression inside the parenthesis
             else if (token.Type == TokenType.LEFT_PAREN)
             {
-                try
-                {
-                    ExpressionNode expression = ParseExpression();
-                    _position++;
-                    Consume(TokenType.RIGHT_PAREN);
-                    return expression;
-                }
-                catch
-                {
-                    throw new InvalidOperationException("Expected token of type RIGHT_PAREN, but found " + Peek(0).Type + ", Token Value: " + Peek(0).Value);
-                }
+                Console.WriteLine("no error encountered, gwapo ka6");
+                ExpressionNode expression = ParseExpression();
+                _position++;
+                Consume(TokenType.RIGHT_PAREN);
+                Console.WriteLine("no error encountered, gwapo ka7");
+                return expression;
             }
             // if naay equals, parse the expression on the right side of equals
             else if (token.Type == TokenType.EQUAL)
             {
+                Console.WriteLine("no error encountered, gwapo ka8");
                 ExpressionNode rhsExpression = ParseExpression();
                 return rhsExpression;
             }
@@ -630,9 +763,9 @@ namespace InterpreterTest
             }
         }
 
-        // utility methods for token manipulation
+        // helper methods for token manipulation
         // retrieves next token and advances position in the token stream
-        private Token NextToken()
+        private Token GetNextToken()
         {
             if (_position < _tokens.Count - 1)
             {
@@ -645,7 +778,7 @@ namespace InterpreterTest
             }
         }
 
-        // if next token matches argument advance position in the token stream
+        // consume tokentype
         private void Consume(TokenType type)
         {
             if (_position < _tokens.Count && _tokens[_position].Type == type)
@@ -655,6 +788,91 @@ namespace InterpreterTest
             else
             {
                 throw new InvalidOperationException($"Expected token of type {type}, but found {_tokens[_position].Type}.");
+            }
+        }
+
+        private Token Consume()
+        {
+                return _tokens[_position++];
+        }
+
+        private void Consume_then_Move(TokenType type)
+        {
+            if (_position < _tokens.Count && _tokens[_position].Type == type)
+            {
+                // advance the position to consume the token
+                _position++;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Expected token of type {type}, but found {_tokens[_position].Type}.");
+            }
+        }
+
+        private void PrintCurrentToken() {
+            Console.WriteLine("Current token is " + Peek(0).Type);
+        }
+
+        private ASTNode ParseConditional()
+        {
+            try
+            {
+                if (Peek(0).Type == TokenType.IF)
+                {
+                    ConditionalNode returnNode = new ConditionalNode(null, null, null);
+                    Console.WriteLine("==IF ARRIVE==");
+                    ExpressionNode condition = ParseExpression();
+                    Consume_then_Move(TokenType.RIGHT_PAREN);
+                    Consume_then_Move(TokenType.LINE_SEPARATOR);
+                    Console.WriteLine("successful parsing of expression in conditional statement");
+
+                    Consume_then_Move(TokenType.BEGIN);
+                    Consume_then_Move(TokenType.IF);
+
+                    List<ASTNode> ifStatements = ParseStatements();
+
+                    Consume_then_Move(TokenType.END);
+                    Consume_then_Move(TokenType.IF);
+                    Consume_then_Move(TokenType.LINE_SEPARATOR);
+
+                    returnNode.Condition = condition;
+                    returnNode.IfStatements = ifStatements;
+
+                    if (Peek(0).Type == TokenType.ELSE && Peek(1).Type == TokenType.IF)
+                    {
+                        Console.WriteLine("==ELSE IF ARRIVE==");
+                        Consume_then_Move(TokenType.ELSE);
+                        returnNode.ElseStatements = (ConditionalNode)ParseConditional();
+                        _position++;
+                    }
+                    else if (Peek(0).Type == TokenType.ELSE)
+                    {
+                        Console.WriteLine("==ELSE ARRIVE==");
+                        Consume_then_Move(TokenType.ELSE);
+                        Consume_then_Move(TokenType.LINE_SEPARATOR);
+                        Consume_then_Move(TokenType.BEGIN);
+                        Consume_then_Move(TokenType.IF);
+
+                        List<ASTNode> elseStatements = ParseStatements();
+                        ConditionalNode lastElse = new ConditionalNode(condition, elseStatements, null);
+                        lastElse.isAlwaysTrue = true;
+                        returnNode.ElseStatements = lastElse;
+
+                        Consume_then_Move(TokenType.END);
+                        Consume_then_Move(TokenType.IF);
+                    }
+                    _position--;
+                    Console.WriteLine("Conditional Node Parsing Finished");
+                    return returnNode;
+                }
+                else
+                {
+                    throw new Exception("Invalid conditional statement.");
+                }
+            }
+            catch
+            {
+                throw new Exception($"Unexpected token encountered: {_tokens[_position].Type}");
             }
         }
 

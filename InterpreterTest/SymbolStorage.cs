@@ -155,7 +155,6 @@ namespace InterpreterTest
             }
         }
 
-
         public dynamic findVariableToExpression(string varName)
         {
             dynamic result;
@@ -187,6 +186,30 @@ namespace InterpreterTest
                 throw new InvalidOperationException($"{varName} doesn't exist");
             }
             return result;
+        }
+
+        public void PrintAll()
+        {
+            Console.WriteLine("ints: ");
+            foreach (KeyValuePair<string, int> kvp in INT)
+            {
+                Console.WriteLine("\t" + kvp.Key + " = " + kvp.Value);
+            }
+            Console.WriteLine("floats: ");
+            foreach (KeyValuePair<string, float> kvp in FLOAT)
+            {
+                Console.WriteLine("\t" + kvp.Key + " = " + kvp.Value);
+            }
+            Console.WriteLine("bools: ");
+            foreach (KeyValuePair<string, bool> kvp in BOOL)
+            {
+                Console.WriteLine("\t" + kvp.Key + " = " + kvp.Value);
+            }
+            Console.WriteLine("chars: ");
+            foreach (KeyValuePair<string, char> kvp in CHAR)
+            {
+                Console.WriteLine("\t" + kvp.Key + " = " + kvp.Value);
+            }
         }
     }
 }

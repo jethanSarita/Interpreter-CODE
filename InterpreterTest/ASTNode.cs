@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 
 namespace InterpreterTest
 {
-    internal abstract class ASTNode { }
+    internal abstract class ASTNode {
+        public String name;
+    }
 
     internal class ProgramNode : ASTNode
     {
@@ -18,7 +20,8 @@ namespace InterpreterTest
         public ProgramNode(List<ASTNode> statements)
         {
             Statements = statements;
-        }
+            name = "Program";
+    }
     }
 
     internal class VariableDeclarationNode : ASTNode
@@ -26,11 +29,13 @@ namespace InterpreterTest
         public String _dataType { get; }
         public String _varName { get; }
 
+
         public VariableDeclarationNode(string dataType, string varName)
         {
             _dataType = dataType;
             _varName = varName;
-        }
+            name = "VarDeclare";
+    }
 
         public override String ToString()
         {
@@ -48,7 +53,8 @@ namespace InterpreterTest
         {
             _varName = varName ?? throw new ArgumentNullException(nameof(varName));
             _expressionNode = expressionNode ?? throw new ArgumentNullException(nameof(expressionNode));
-        }
+            name = "VarAssign2";
+    }
 
         public void eval(SymbolStorage symbolStorage)
         {
@@ -64,8 +70,6 @@ namespace InterpreterTest
         }
     }
 
-
-
     internal class VariableAssignmentNode : ASTNode
     {
         public string _varName { get; }
@@ -77,6 +81,7 @@ namespace InterpreterTest
             _varName = varName;
             _literal = literal;
             _literalType = literalType;
+            name = "VarAssign1";
         }
 
         public override string ToString()
@@ -89,6 +94,10 @@ namespace InterpreterTest
     internal abstract class DisplayNode : ASTNode
     {
         public abstract string eval(SymbolStorage symbolStorage);
+
+        public DisplayNode() {
+            name = "Display";
+        }
     }
 
     internal class DisplayConcatNode : DisplayNode
@@ -100,6 +109,7 @@ namespace InterpreterTest
         {
             _left = left;
             _right = right;
+            name = "DisplayConcat";
         }
 
         public override string eval(SymbolStorage symbolStorage)
@@ -116,6 +126,7 @@ namespace InterpreterTest
         public DisplayVariableNode(string varName)
         {
             _varName = varName;
+            name = "DisplayVar";
         }
         public override string eval(SymbolStorage symbolStorage)
         {
@@ -130,6 +141,7 @@ namespace InterpreterTest
         public DisplayStringNode(string value)
         {
             _value = value;
+            name = "DisplayString";
         }
         public override string eval(SymbolStorage symbolStorage)
         {
@@ -153,6 +165,7 @@ namespace InterpreterTest
             _left = left;
             _right = right;
             _binaryOperator = binaryOperator;
+            name = "ExpressionBinary";
         }
 
         public override dynamic eval(SymbolStorage symbolStorage)
@@ -210,6 +223,11 @@ namespace InterpreterTest
                     result = _left.eval(symbolStorage) <= _right.eval(symbolStorage);
                     Console.WriteLine(_left.eval(symbolStorage) + "<=" + _right.eval(symbolStorage) + "=" + result);
                     break;
+                case "<>":
+                    //Not equal
+                    result = _left.eval(symbolStorage) != _right.eval(symbolStorage);
+                    Console.WriteLine(_left.eval(symbolStorage) + "<>" + _right.eval(symbolStorage) + "=" + result);
+                    break;
             }
             return result;
         }
@@ -222,6 +240,7 @@ namespace InterpreterTest
         public ExpressionVariable(string varName)
         {
             _varName = varName;
+            name = "ExpressionVar";
         }
 
         public override dynamic eval(SymbolStorage symbolStorage)
@@ -239,6 +258,7 @@ namespace InterpreterTest
         {
             _literal = literal;
             _literalType = literalType;
+            name = "ExpressionLiteral";
         }
 
         public override dynamic eval(SymbolStorage symbolStorage)
@@ -309,6 +329,7 @@ namespace InterpreterTest
         public ScannedIdentifierNode(string varName)
         {
             this.varName = varName;
+            name = "ScannedIdentifier";
         }
     }
 
@@ -324,7 +345,25 @@ namespace InterpreterTest
         public ScanStatementNode(List<ASTNode> scans)
         {
             Scans = scans;
+            name = "ScannedStatement";
         }
 
     }
+
+    internal class ConditionalNode : ASTNode
+    {
+        public ExpressionNode Condition { get; set; }
+        public List<ASTNode> IfStatements { get; set; }
+        public ConditionalNode ElseStatements { get; set; }
+        public bool isAlwaysTrue = false;
+
+        public ConditionalNode(ExpressionNode condition, List<ASTNode> ifStatements, ConditionalNode elseStatements)
+        {
+            Condition = condition;
+            IfStatements = ifStatements;
+            ElseStatements = elseStatements;
+            name = "Conditional";
+        }
+    }
+
 }
