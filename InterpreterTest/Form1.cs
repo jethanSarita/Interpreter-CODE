@@ -65,14 +65,14 @@ namespace InterpreterTest
                     {
                         Console.WriteLine("variableNode: " + variableNode.ToString());
                     }
-                    else if (node is DisplayNode displanyNode)
+                    else if (node is DisplayNode displayNode)
                     {
-                        Console.WriteLine("displayNode: " + displanyNode.ToString());
+                        Console.WriteLine("displayNode: " + displayNode.ToString());
                     }
-                    else if (node is VariableAssignmentNode assignmentNode)
+                    /*else if (node is VariableAssignmentNode assignmentNode)
                     {
                         Console.WriteLine("assignmentNode: " + assignmentNode.ToString());
-                    }
+                    }*/
                     else if (node is ScanStatementNode scanStatementNode)
                     {
                         Console.WriteLine("scanStatementNode: " + scanStatementNode.ToString());

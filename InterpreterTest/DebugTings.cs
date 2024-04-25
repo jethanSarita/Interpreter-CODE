@@ -28,10 +28,6 @@ namespace InterpreterTest
                 DebugTings.print(bin._left, tab + 1);
                 DebugTings.print(bin._right, tab + 1);
             }
-            else if (tree is DisplayVariableNode dis)
-            {
-                Console.Write(" " + dis._varName);
-            }
             Console.Write("\n");
         }
     }

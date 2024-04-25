@@ -49,6 +49,10 @@ namespace InterpreterTest
                 {
                     EvaluateConditional(conditionalNode);
                 }
+                else if (currNode is LoopNode loopNode)
+                {
+                    EvaluateLoop(loopNode);
+                }
 
                 _position++;
             }
@@ -171,5 +175,49 @@ namespace InterpreterTest
                 }
             }
         }
+
+        private void EvaluateLoop(LoopNode loop)
+        {
+            while (loop.LoopCondition.eval(_symbolStorage))
+            {
+                EvaluateLoopStatements(loop.LoopStatements);
+            }
+        }
+
+        private void EvaluateLoopStatements(List<ASTNode> statements)
+        {
+            foreach (ASTNode statement in statements)
+            {
+                DebugTings.print(statement);
+                Console.WriteLine("evaluating statement in conditional " + statement.name);
+                if (statement is LoopNode loopNode)
+                {
+                    EvaluateLoopStatements(loopNode.LoopStatements);
+                }
+                else
+                {
+                    if (statement is VariableDeclarationNode variableDeclarationNode)
+                    {
+                        HandleVariableDeclaration(variableDeclarationNode);
+                    }
+                    else if (statement is VariableAssignmentNode2 variableAssignmentNode)
+                    {
+                        HandleVariableAssignment(variableAssignmentNode);
+                    }
+                    else if (statement is DisplayNode displayNode)
+                    {
+                        Console.WriteLine("no error encountered before - display");
+                        _symbolStorage.PrintAll();
+                        HandleDisplayNode(displayNode);
+                        Console.WriteLine("no error encountered after - display");
+                    }
+                    else if (statement is ScanStatementNode scanNode)
+                    {
+                        HandleScanStatement(scanNode);
+                    }
+                }
+            }
+        }
+
     }
 }

@@ -62,6 +62,10 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseConditional());
                 }
+                else if (currentToken.Type == TokenType.WHILE)
+                {
+                    statements.Add(ParseLoop());
+                }
 
                 //Check if datatype
                 if (
@@ -203,6 +207,10 @@ namespace InterpreterTest
                 if (currentToken.Type == TokenType.IF)
                 {
                     statements.Add(ParseConditional());
+                }
+                else if (currentToken.Type == TokenType.WHILE)
+                {
+                    statements.Add(ParseLoop());
                 }
 
                 //Check if datatype
@@ -680,45 +688,121 @@ namespace InterpreterTest
         // breaking down the expression into smaller parts for parsing
         private ExpressionNode ParseExpression()
         {
-            // parse first term
-            ExpressionNode left = ParseTerm();
-            // continue parsing other terms and create nodes
-            // +, -, <, >, <=, >=, ==, and <> as parents and other terms as children
-            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-" ||
-                                        Peek(1).Value == "<" || Peek(1).Value == ">" ||
+            ExpressionNode expression = ParseLogical();
+
+            return expression;
+        }
+
+        private ExpressionNode ParseLogical()
+        {
+            // parse first factor
+            ExpressionNode left = ParseComparison();
+
+            // continue parsing other factors and create nodes
+            // & parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR" || Peek(1).Value == "NOT"))
+            {
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseComparison();
+                left = new ExpressionConcat(left, right);
+            }
+
+            return left;
+        }
+        
+        private ExpressionNode ParseComparison()
+        {
+            // parse first factor
+            ExpressionNode left = ParseConcat();
+
+            // continue parsing other factors and create nodes
+            // & parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "<" || Peek(1).Value == ">" ||
                                         Peek(1).Value == "<=" || Peek(1).Value == ">=" ||
                                         Peek(1).Value == "==" || Peek(1).Value == "<>"))
             {
-                Token opToken = GetNextToken();
-                ExpressionNode right = ParseTerm();
-                left = new ExpressionBinary(left, right, opToken.Value);
-
+                ExpressionNode right = ParseConcat();
+                left = new ExpressionConcat(left, right);
             }
+
+            return left;
+        }
+
+        private ExpressionNode ParseConcat()
+        {
+            // parse first factor
+            ExpressionNode left = ParseAdditive();
+
+            // continue parsing other factors and create nodes
+            // & parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "&"))
+            {
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseAdditive();
+                left = new ExpressionConcat(left, right);
+            }
+
+            return left;
+        }
+
+
+        private ExpressionNode ParseAdditive()
+        {
+            // parse first factor
+            ExpressionNode left = ParseMultiplicative();
+
+            // continue parsing other factors and create nodes
+            // *, /, and % as parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "+" || Peek(1).Value == "-"))
+            {
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseMultiplicative();
+                left = new ExpressionBinary(left, right, opToken.Value);
+            }
+
             return left;
         }
 
         // now parse terms to factors
-        private ExpressionNode ParseTerm()
+        private ExpressionNode ParseMultiplicative()
         {
             // parse first factor
-            ExpressionNode left = ParseFactor();
+            ExpressionNode left = ParseUnary();
 
             // continue parsing other factors and create nodes
             // *, /, and % as parents and other factors as children
             while (Peek(1) != null && (Peek(1).Value == "*" || Peek(1).Value == "/" || Peek(1).Value == "%"))
             {
                 Token opToken = GetNextToken();
-                ExpressionNode right = ParseFactor();
+                ExpressionNode right = ParseUnary();
                 left = new ExpressionBinary(left, right, opToken.Value);
             }
 
             return left;
         }
 
+        private ExpressionNode ParseUnary()
+        {
+            Console.WriteLine("==UNARY FOUND==");
+            if (Peek(1) != null && (Peek(1).Value == "-" || Peek(1).Value == "+"))
+            {
+                Console.WriteLine("==UNARY FOUND==");
+                Token opToken = GetNextToken();
+                PrintCurrentToken();
+                ExpressionNode right = ParseFactor();
+                PrintCurrentToken();
+                ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
+
+                return new ExpressionBinary(left, right, opToken.Value);
+            }
+            return ParseFactor();
+        }
+
         // parse factors into nodes for evaluation
         private ExpressionNode ParseFactor()
         {
             Console.WriteLine("no error encountered, gwapo ka1");
+            PrintCurrentToken();
             Token token = GetNextToken();
             Console.WriteLine("token is " + token.Type);
 
@@ -756,6 +840,11 @@ namespace InterpreterTest
                 Console.WriteLine("no error encountered, gwapo ka8");
                 ExpressionNode rhsExpression = ParseExpression();
                 return rhsExpression;
+            }
+            else if (token.Type == TokenType.STRING || token.Type == TokenType.LETTER)
+            {
+                return new ExpressionLiteral(token.Value, "STRING");
+
             }
             else
             {
@@ -819,7 +908,7 @@ namespace InterpreterTest
             {
                 if (Peek(0).Type == TokenType.IF)
                 {
-                    ConditionalNode returnNode = new ConditionalNode(null, null, null);
+                    ConditionalNode returnConditionNode = new ConditionalNode(null, null, null);
                     Console.WriteLine("==IF ARRIVE==");
                     ExpressionNode condition = ParseExpression();
                     Consume_then_Move(TokenType.RIGHT_PAREN);
@@ -835,14 +924,14 @@ namespace InterpreterTest
                     Consume_then_Move(TokenType.IF);
                     Consume_then_Move(TokenType.LINE_SEPARATOR);
 
-                    returnNode.Condition = condition;
-                    returnNode.IfStatements = ifStatements;
+                    returnConditionNode.Condition = condition;
+                    returnConditionNode.IfStatements = ifStatements;
 
                     if (Peek(0).Type == TokenType.ELSE && Peek(1).Type == TokenType.IF)
                     {
                         Console.WriteLine("==ELSE IF ARRIVE==");
                         Consume_then_Move(TokenType.ELSE);
-                        returnNode.ElseStatements = (ConditionalNode)ParseConditional();
+                        returnConditionNode.ElseStatements = (ConditionalNode)ParseConditional();
                         _position++;
                     }
                     else if (Peek(0).Type == TokenType.ELSE)
@@ -856,14 +945,14 @@ namespace InterpreterTest
                         List<ASTNode> elseStatements = ParseStatements();
                         ConditionalNode lastElse = new ConditionalNode(condition, elseStatements, null);
                         lastElse.isAlwaysTrue = true;
-                        returnNode.ElseStatements = lastElse;
+                        returnConditionNode.ElseStatements = lastElse;
 
                         Consume_then_Move(TokenType.END);
                         Consume_then_Move(TokenType.IF);
                     }
                     _position--;
                     Console.WriteLine("Conditional Node Parsing Finished");
-                    return returnNode;
+                    return returnConditionNode;
                 }
                 else
                 {
@@ -876,7 +965,39 @@ namespace InterpreterTest
             }
         }
 
-        private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken)
+        private ASTNode ParseLoop()
+        {
+            LoopNode returnLoopNode = null;
+            try
+            {
+                    returnLoopNode = new LoopNode(null, null, null);
+                    Console.WriteLine("==FIRST WHILE ARRIVE==");
+                    ExpressionNode loop_condition = ParseExpression();
+                    Consume_then_Move(TokenType.RIGHT_PAREN);
+                    Consume_then_Move(TokenType.LINE_SEPARATOR);
+                    Console.WriteLine("successful parsing of expression in loop condition");
+
+                    Consume_then_Move(TokenType.BEGIN);
+                    Consume_then_Move(TokenType.WHILE);
+
+                    List<ASTNode> loop_statements = ParseStatements();
+
+                    Consume_then_Move(TokenType.END);
+                    Consume_then_Move(TokenType.WHILE);
+                    Consume_then_Move(TokenType.LINE_SEPARATOR);
+
+                    returnLoopNode.LoopCondition = loop_condition;
+                    returnLoopNode.LoopStatements = loop_statements;
+                    _position--;
+                    return returnLoopNode;
+            }
+            catch
+            {
+                throw new Exception($"Unexpected token encountered: {_tokens[_position].Type}");
+            }
+        }
+
+        private ASTNode ParseVariableDeclaration(Token dataTypeToken, Token varNameToken/*, ASTNode variableAssignment*/)
         {
             return new VariableDeclarationNode(dataTypeToken.Value, varNameToken.Value);
         }
@@ -884,102 +1005,22 @@ namespace InterpreterTest
         private ASTNode ParseDisplayStatement()
         {
             _position++;
-
+            PrintCurrentToken();
             //after DISPLAY there should be a colon ':'
             if (_tokens[_position].Type != TokenType.COLON)
             {
                 throw new InvalidOperationException($"Error at line {_lineCounter}: Expected ':' after DISPLAY statement");
             }
-            _position++;
-
+            PrintCurrentToken();
             //parse display items until end of the line
-            DisplayNode displayNode = ParseDisplayItem();
+            DisplayNode displayNode = new DisplayNode();
+            displayNode.toDisplay = ParseExpression();
 
             _position++;
             return displayNode;
         }
 
-        private DisplayNode ParseDisplayItem()
-        {
-            Token currToken;
-            bool concatLock = true;
-            DisplayNode result = new DisplayVariableNode("null");
-            //handle different types of display items
-            while (_position < _tokens.Count)
-            {
-                currToken = _tokens[_position];
-
-                if (currToken.Type == TokenType.LINE_SEPARATOR)
-                {
-                    break;
-                }
-
-                if (CheckIfDisplayable(currToken) && concatLock)
-                {
-                    if (Peek(1) != null && Peek(1).Type == TokenType.CONCATENATE)
-                    {
-                        if (Peek(2) != null && CheckIfDisplayable(Peek(2)))
-                        {
-                            result = new DisplayConcatNode(ParseDisplayable(currToken), ParseDisplayable(Peek(2)));
-                            _position++;
-                            _position++;
-                            concatLock = false;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException($"Error at line {_lineCounter}: Expected data after concatenation at Display");
-                        }
-                    }
-                    else
-                    {
-                        result = new DisplayVariableNode(currToken.Value);
-                    }
-                }
-                else if (currToken.Type == TokenType.CONCATENATE && !concatLock)
-                {
-                    if (Peek(1) != null && CheckIfDisplayable(Peek(1)))
-                    {
-                        result = new DisplayConcatNode(result, ParseDisplayable(Peek(1)));
-                        _position++;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Error at line {_lineCounter}: {Peek(1).Value} in display is invalid");
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Error at line {_lineCounter}: {currToken.Value} in display is invalid");
-                }
-                _position++;
-            }
-            Console.WriteLine("Result: " + result);
-            _position--;
-            return result;
-        }
-
-        private DisplayNode ParseDisplayable(Token token)
-        {
-            if (token.Type == TokenType.IDENTIFIER)
-            {
-                return new DisplayVariableNode(token.Value);
-            }
-            else if (token.Type == TokenType.NEXT_LINE)
-            {
-                return new DisplayStringNode(Environment.NewLine);
-            }
-            else if (token.Type == TokenType.LETTER)
-            {
-                return new DisplayStringNode(token.Value);
-            }
-            else if (token.Type == TokenType.STRING)
-            {
-                return new DisplayStringNode(token.Value);
-            }
-            //add more NEXT_LINE, LETTER, and STRING
-            return null;
-        }
-
+        /*
         private bool CheckIfDisplayable(Token token)
         {
             if (token.Type == TokenType.IDENTIFIER ||
@@ -993,7 +1034,7 @@ namespace InterpreterTest
             {
                 return false;
             }
-        }
+        }*/
 
         private ASTNode ParseScanStatement()
         {
