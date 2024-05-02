@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,12 +29,14 @@ namespace InterpreterTest
     {
         public String _dataType { get; }
         public String _varName { get; }
+        //public VariableAssignmentNode2 _varAssign { get; }
 
 
         public VariableDeclarationNode(string dataType, string varName)
         {
             _dataType = dataType;
             _varName = varName;
+            //_varAssign = varAssign;
             name = "VarDeclare";
     }
 
@@ -69,7 +72,8 @@ namespace InterpreterTest
             }
         }
     }
-
+    
+    /*
     internal class VariableAssignmentNode : ASTNode
     {
         public string _varName { get; }
@@ -89,63 +93,19 @@ namespace InterpreterTest
             return $"Variable Name: {_varName}, Value: {_literal}, Literal Type: {_literalType}";
         }
 
-    }
+    }*/
 
-    internal abstract class DisplayNode : ASTNode
+    internal class DisplayNode : ASTNode
     {
-        public abstract string eval(SymbolStorage symbolStorage);
+        public string eval(SymbolStorage symbolStorage)
+        {
+            dynamic result = toDisplay?.eval(symbolStorage);
+            return Convert.ToString(result);
+        }
+        public ExpressionNode toDisplay = null;
 
         public DisplayNode() {
             name = "Display";
-        }
-    }
-
-    internal class DisplayConcatNode : DisplayNode
-    {
-        public DisplayNode _left;
-        public DisplayNode _right;
-
-        public DisplayConcatNode(DisplayNode left, DisplayNode right)
-        {
-            _left = left;
-            _right = right;
-            name = "DisplayConcat";
-        }
-
-        public override string eval(SymbolStorage symbolStorage)
-        {
-            string check = _left.eval(symbolStorage) + _right.eval(symbolStorage);
-            return _left.eval(symbolStorage) + _right.eval(symbolStorage);
-        }
-    }
-
-    internal class DisplayVariableNode : DisplayNode
-    {
-        public string _varName;
-
-        public DisplayVariableNode(string varName)
-        {
-            _varName = varName;
-            name = "DisplayVar";
-        }
-        public override string eval(SymbolStorage symbolStorage)
-        {
-            return "" + symbolStorage.findVariableToString(_varName);
-        }
-    }
-
-    internal class DisplayStringNode : DisplayNode
-    {
-        public string _value;
-
-        public DisplayStringNode(string value)
-        {
-            _value = value;
-            name = "DisplayString";
-        }
-        public override string eval(SymbolStorage symbolStorage)
-        {
-            return _value;
         }
     }
 
@@ -249,6 +209,27 @@ namespace InterpreterTest
         }
     }
 
+    internal class ExpressionConcat : ExpressionNode
+    {
+        public ExpressionNode _left;
+        public ExpressionNode _right;
+
+        public ExpressionConcat(ExpressionNode left, ExpressionNode right)
+        {
+            _left = left;
+            _right = right;
+            name = "ExpressionConcat";
+        }
+
+        public override dynamic eval(SymbolStorage symbolStorage)
+        {
+            dynamic left_result = _left.eval(symbolStorage);
+            dynamic right_result = _right.eval(symbolStorage);
+
+            return Convert.ToString(left_result) + Convert.ToString(right_result);
+        }
+    }
+
     internal class ExpressionLiteral : ExpressionNode
     {
         public string _literal;
@@ -283,6 +264,9 @@ namespace InterpreterTest
                     break;
                 case "IDENTIFIER":
                     result = symbolStorage.findVariableToExpression(_literal);
+                    break;
+                case "STRING":
+                    result = _literal;
                     break;
             }
             return result;
@@ -363,6 +347,21 @@ namespace InterpreterTest
             IfStatements = ifStatements;
             ElseStatements = elseStatements;
             name = "Conditional";
+        }
+    }
+
+    internal class LoopNode : ASTNode
+    {
+        public ExpressionNode LoopCondition { get; set; }
+        public List<ASTNode> LoopStatements { get; set; }
+        public LoopNode NestedLoop { get; set; }
+
+        public LoopNode(ExpressionNode loopCondition, List<ASTNode> loopStatements, LoopNode nestedLoop)
+        {
+            LoopCondition = loopCondition;
+            LoopStatements = loopStatements;
+            NestedLoop = nestedLoop;
+            name = "Loop";
         }
     }
 
