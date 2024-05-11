@@ -66,13 +66,6 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseLoop());
                 }
-                else if(currentToken.Type == TokenType.COMMENT)
-                {
-                    if(_insideCodeBlock == false || _insideCodeBlock == true)
-                    {
-                        continue;
-                    }
-                }
 
                 //Check if datatype
                 if (
