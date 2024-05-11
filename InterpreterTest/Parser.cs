@@ -33,11 +33,19 @@ namespace InterpreterTest
         }
 
         public ProgramNode Parse()
-        {            
+        {
+
             Token currentToken = _tokens[_position];
             if (!(currentToken.Type == TokenType.BEGIN && Peek(1) != null && Peek(1).Type == TokenType.CODE))
             {
-                throw new Exception($"Error at line {_lineCounter}: Expected 'BEGIN CODE'");
+                if (currentToken.Type == TokenType.COMMENT)
+                {
+                    SkipComments();
+                }
+                else
+                {
+                    throw new Exception($"Error at line {_lineCounter}: Expected 'BEGIN CODE'");
+                }
             }
 
             _position++;
@@ -70,6 +78,12 @@ namespace InterpreterTest
                 else if (currentToken.Type == TokenType.WHILE)
                 {
                     statements.Add(ParseLoop());
+                }
+               
+                if(currentToken.Type == TokenType.COMMENT)
+                {
+                    SkipComments();
+                    continue;
                 }
 
                 //Check if datatype
@@ -208,7 +222,17 @@ namespace InterpreterTest
             return new ProgramNode(statements);
         }
 
-        public List<ASTNode> ParseStatements()
+        private void SkipComments()
+        {
+            while (_position < _tokens.Count && _tokens[_position].Type != TokenType.LINE_SEPARATOR)
+            {
+                _position++;
+            }
+            // Move to the next line
+            _lineCounter++;
+        }
+
+            public List<ASTNode> ParseStatements()
         {
             Token currentToken = _tokens[_position];
             var statements = new List<ASTNode>();
