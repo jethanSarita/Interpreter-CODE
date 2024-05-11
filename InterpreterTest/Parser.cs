@@ -51,6 +51,11 @@ namespace InterpreterTest
                 Console.WriteLine("Current Token: " + currentToken);
                 if (currentToken.Type == TokenType.END && Peek(1) != null && Peek(1).Type == TokenType.CODE)
                 {
+                    if(Peek(2) != null)
+                    {
+                        _lineCounter++;
+                        throw new Exception($"Error at line {_lineCounter + 1}: Code Ended already at line {_lineCounter}");
+                    }
                     Console.WriteLine("no end code--------------------------------------------------------------------");
                     _insideCodeBlock = false;
                     break;
