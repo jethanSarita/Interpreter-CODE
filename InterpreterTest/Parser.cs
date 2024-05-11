@@ -124,6 +124,12 @@ namespace InterpreterTest
                                             _position += 2;
                                         }                                       
                                     }
+                                    else if(IsUnaryOperator(Peek(2)))
+                                    {
+                                        ExpressionNode value = ParseUnary();
+                                        statements.Add(ParseVariableAssignment(currentToken, value));
+
+                                    }
                                     else
                                     {
                                         //Not a literal, throw error
@@ -372,6 +378,11 @@ namespace InterpreterTest
                     break;
             }
             return result;
+        }
+
+        private bool IsUnaryOperator(Token token)
+        {
+            return token.Type == TokenType.PLUS || token.Type == TokenType.MINUS;
         }
 
         private ASTNode TypeCompatibility(Token dataType, Token variable, Token literal)
@@ -828,7 +839,8 @@ namespace InterpreterTest
                 PrintCurrentToken();
                 ExpressionNode right = ParseFactor();
                 PrintCurrentToken();
-                ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
+                //ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
+                ExpressionNode left = new ExpressionLiteral("0", TokenType.NUMBER.ToString());
 
                 return new ExpressionBinary(left, right, opToken.Value);
             }
