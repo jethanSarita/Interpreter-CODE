@@ -33,7 +33,7 @@ namespace InterpreterTest
         }
 
         public ProgramNode Parse()
-        {
+        {            
             Token currentToken = _tokens[_position];
             if (!(currentToken.Type == TokenType.BEGIN && Peek(1) != null && Peek(1).Type == TokenType.CODE))
             {
@@ -66,6 +66,13 @@ namespace InterpreterTest
                 {
                     statements.Add(ParseLoop());
                 }
+                else if(currentToken.Type == TokenType.COMMENT)
+                {
+                    if(_insideCodeBlock == false || _insideCodeBlock == true)
+                    {
+                        continue;
+                    }
+                }
 
                 //Check if datatype
                 if (
@@ -93,9 +100,17 @@ namespace InterpreterTest
                                     //It's equal, check if following is a literal
                                     if (IsLiteral(Peek(2)))
                                     {
-                                        //It's a literal, check compatibility and add VariableAssignementNode
-                                        statements.Add(TypeCompatibility(dataType, currentToken, Peek(2)));
-                                        _position += 2;
+                                        if (IsOperator(Peek(3)))
+                                        {
+                                            ExpressionNode value = ParseExpression();
+                                            statements.Add(ParseVariableAssignment(currentToken, value));
+                                        }
+                                        else
+                                        {
+                                            //It's a literal, check compatibility and add VariableAssignementNode
+                                            statements.Add(TypeCompatibility(dataType, currentToken, Peek(2)));
+                                            _position += 2;
+                                        }                                       
                                     }
                                     else
                                     {
@@ -1084,6 +1099,11 @@ namespace InterpreterTest
         private ASTNode ParseVariableAssignment(Token variableName, Token literal)
         {
             return new VariableAssignmentNode2(variableName.Value, ParseExpressionLiteral(literal));
+        }
+
+        private ASTNode ParseVariableAssignment(Token varname, ExpressionNode node)
+        {
+            return new VariableAssignmentNode2(varname.Value, node);
         }
 
         private ExpressionNode ParseExpressionLiteral(Token literal)
