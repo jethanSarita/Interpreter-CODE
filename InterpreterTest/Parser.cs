@@ -435,7 +435,9 @@ namespace InterpreterTest
                 token.Type == TokenType.LETTER ||
                 token.Type == TokenType.NUMBER ||
                 token.Type == TokenType.DECIMAL_NUMBER ||
-                token.Type == TokenType.STRING)
+                token.Type == TokenType.STRING ||
+                token.Type == TokenType.TRUE ||
+                token.Type == TokenType.FALSE)
             {
                 return true;
             }
