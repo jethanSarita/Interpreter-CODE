@@ -100,6 +100,15 @@ namespace InterpreterTest
         public string eval(SymbolStorage symbolStorage)
         {
             dynamic result = toDisplay?.eval(symbolStorage);
+            string result_s = Convert.ToString(result);
+
+            if (string.Equals(result_s, "True") || string.Equals(result_s, "False"))
+            {
+                result_s = result_s.ToUpper();
+            }
+
+            return result_s;
+
             return Convert.ToString(result);
         }
         public ExpressionNode toDisplay = null;
@@ -225,6 +234,20 @@ namespace InterpreterTest
         {
             dynamic left_result = _left.eval(symbolStorage);
             dynamic right_result = _right.eval(symbolStorage);
+
+            string left_result_s = Convert.ToString(left_result);
+            string right_result_s = Convert.ToString(right_result);
+
+            if (string.Equals(left_result_s, "True") || string.Equals(left_result_s, "False"))
+            {
+                left_result_s = left_result_s.ToUpper();
+            }
+            if (string.Equals(right_result_s, "True") || string.Equals(right_result_s, "False"))
+            {
+                right_result_s = right_result_s.ToUpper();
+            }
+
+            return left_result_s + right_result_s;
 
             return Convert.ToString(left_result) + Convert.ToString(right_result);
         }
