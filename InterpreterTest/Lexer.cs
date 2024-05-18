@@ -272,7 +272,14 @@ namespace InterpreterTest
                     throw new InvalidOperationException($"Unknown token at position {_position}: {currentChar}");
                 }
             }
-            return tokens;
+            var sanitize = new List<Token>();
+            foreach (Token t in tokens) {
+                if (t.Type == Token.TokenType.COMMENT){
+                    continue;
+                }
+                sanitize.Add(t);
+            }
+            return sanitize;
         }
 
         private char Peek()

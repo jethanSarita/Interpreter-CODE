@@ -34,8 +34,12 @@ namespace InterpreterTest
 
         public ProgramNode Parse()
         {
-
+            while (Peek(0).Type == TokenType.LINE_SEPARATOR)
+            {
+                Consume();
+            }
             Token currentToken = _tokens[_position];
+            PrintCurrentToken();
             if (!(currentToken.Type == TokenType.BEGIN && Peek(1) != null && Peek(1).Type == TokenType.CODE))
             {
                 if (currentToken.Type == TokenType.COMMENT)
@@ -59,7 +63,14 @@ namespace InterpreterTest
                 Console.WriteLine("Current Token: " + currentToken);
                 if (currentToken.Type == TokenType.END && Peek(1) != null && Peek(1).Type == TokenType.CODE)
                 {
-                    if(Peek(2) != null)
+                    Consume();
+                    Consume();
+
+                    while (Peek(0) != null && Peek(0).Type == TokenType.LINE_SEPARATOR)
+                    {
+                        Consume();
+                    }
+                    if (Peek(0) != null)
                     {
                         _lineCounter++;
                         throw new Exception($"Error at line {_lineCounter + 1}: Code Ended already at line {_lineCounter}");
@@ -750,11 +761,11 @@ namespace InterpreterTest
 
             // continue parsing other factors and create nodes
             // & parents and other factors as children
-            while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR" || Peek(1).Value == "NOT"))
+            while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR"))
             {
                 Token opToken = GetNextToken();
                 ExpressionNode right = ParseComparison();
-                left = new ExpressionConcat(left, right);
+                left = new ExpressionBinary(left, right, opToken.Value);
             }
 
             return left;
@@ -764,15 +775,18 @@ namespace InterpreterTest
         {
             // parse first factor
             ExpressionNode left = ParseConcat();
-
+            if (left is ExpressionVariable l) {
+                Console.WriteLine("variable: " + l._varName + Peek(1).Value);
+            }
             // continue parsing other factors and create nodes
             // & parents and other factors as children
             while (Peek(1) != null && (Peek(1).Value == "<" || Peek(1).Value == ">" ||
                                         Peek(1).Value == "<=" || Peek(1).Value == ">=" ||
                                         Peek(1).Value == "==" || Peek(1).Value == "<>"))
             {
+                Token opToken = GetNextToken();
                 ExpressionNode right = ParseConcat();
-                left = new ExpressionConcat(left, right);
+                left = new ExpressionBinary(left, right, opToken.Value);
             }
 
             return left;
@@ -833,10 +847,8 @@ namespace InterpreterTest
 
         private ExpressionNode ParseUnary()
         {
-            Console.WriteLine("==UNARY FOUND==");
-            if (Peek(1) != null && (Peek(1).Value == "-" || Peek(1).Value == "+"))
+            if (Peek(1) != null && (Peek(1).Value == "-" || Peek(1).Value == "+" || Peek(1).Value == "NOT"))
             {
-                Console.WriteLine("==UNARY FOUND==");
                 Token opToken = GetNextToken();
                 PrintCurrentToken();
                 ExpressionNode right = ParseFactor();
@@ -855,7 +867,7 @@ namespace InterpreterTest
             Console.WriteLine("no error encountered, gwapo ka1");
             PrintCurrentToken();
             Token token = GetNextToken();
-            Console.WriteLine("token is " + token.Type);
+            Console.WriteLine("next token is " + token.Type);
 
             // if token is a literal, create a literal node in the AST
             if (token.Type == TokenType.NUMBER || token.Type == TokenType.DECIMAL_NUMBER)
