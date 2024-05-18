@@ -197,6 +197,18 @@ namespace InterpreterTest
                     result = _left.eval(symbolStorage) != _right.eval(symbolStorage);
                     Console.WriteLine(_left.eval(symbolStorage) + "<>" + _right.eval(symbolStorage) + "=" + result);
                     break;
+                case "NOT":
+                    //NOT logical
+                    result = !_right.eval(symbolStorage);
+                    break;
+                case "AND":
+                    //NOT logical
+                    result = _left.eval(symbolStorage) && _right.eval(symbolStorage);
+                    break;
+                case "OR":
+                    //NOT logical
+                    result = _left.eval(symbolStorage) || _right.eval(symbolStorage);
+                    break;
             }
             return result;
         }
