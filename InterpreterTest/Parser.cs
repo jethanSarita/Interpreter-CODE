@@ -34,10 +34,18 @@ namespace InterpreterTest
 
         public ProgramNode Parse()
         {
+
             Token currentToken = _tokens[_position];
             if (!(currentToken.Type == TokenType.BEGIN && Peek(1) != null && Peek(1).Type == TokenType.CODE))
             {
-                throw new Exception($"Error at line {_lineCounter}: Expected 'BEGIN CODE'");
+                if (currentToken.Type == TokenType.COMMENT)
+                {
+                    SkipComments();
+                }
+                else
+                {
+                    throw new Exception($"Error at line {_lineCounter}: Expected 'BEGIN CODE'");
+                }
             }
 
             _position++;
@@ -51,6 +59,11 @@ namespace InterpreterTest
                 Console.WriteLine("Current Token: " + currentToken);
                 if (currentToken.Type == TokenType.END && Peek(1) != null && Peek(1).Type == TokenType.CODE)
                 {
+                    if(Peek(2) != null)
+                    {
+                        _lineCounter++;
+                        throw new Exception($"Error at line {_lineCounter + 1}: Code Ended already at line {_lineCounter}");
+                    }
                     Console.WriteLine("no end code--------------------------------------------------------------------");
                     _insideCodeBlock = false;
                     break;
@@ -65,6 +78,12 @@ namespace InterpreterTest
                 else if (currentToken.Type == TokenType.WHILE)
                 {
                     statements.Add(ParseLoop());
+                }
+               
+                if(currentToken.Type == TokenType.COMMENT)
+                {
+                    SkipComments();
+                    continue;
                 }
 
                 //Check if datatype
@@ -93,9 +112,23 @@ namespace InterpreterTest
                                     //It's equal, check if following is a literal
                                     if (IsLiteral(Peek(2)))
                                     {
-                                        //It's a literal, check compatibility and add VariableAssignementNode
-                                        statements.Add(TypeCompatibility(dataType, currentToken, Peek(2)));
-                                        _position += 2;
+                                        if (IsOperator(Peek(3)))
+                                        {
+                                            ExpressionNode value = ParseExpression();
+                                            statements.Add(ParseVariableAssignment(currentToken, value));
+                                        }
+                                        else
+                                        {
+                                            //It's a literal, check compatibility and add VariableAssignementNode
+                                            statements.Add(TypeCompatibility(dataType, currentToken, Peek(2)));
+                                            _position += 2;
+                                        }                                       
+                                    }
+                                    else if(IsUnaryOperator(Peek(2)))
+                                    {
+                                        ExpressionNode value = ParseUnary();
+                                        statements.Add(ParseVariableAssignment(currentToken, value));
+
                                     }
                                     else
                                     {
@@ -195,7 +228,17 @@ namespace InterpreterTest
             return new ProgramNode(statements);
         }
 
-        public List<ASTNode> ParseStatements()
+        private void SkipComments()
+        {
+            while (_position < _tokens.Count && _tokens[_position].Type != TokenType.LINE_SEPARATOR)
+            {
+                _position++;
+            }
+            // Move to the next line
+            _lineCounter++;
+        }
+
+            public List<ASTNode> ParseStatements()
         {
             Token currentToken = _tokens[_position];
             var statements = new List<ASTNode>();
@@ -337,6 +380,11 @@ namespace InterpreterTest
             return result;
         }
 
+        private bool IsUnaryOperator(Token token)
+        {
+            return token.Type == TokenType.PLUS || token.Type == TokenType.MINUS;
+        }
+
         private ASTNode TypeCompatibility(Token dataType, Token variable, Token literal)
         {
             //Check datatype
@@ -387,7 +435,9 @@ namespace InterpreterTest
                 token.Type == TokenType.LETTER ||
                 token.Type == TokenType.NUMBER ||
                 token.Type == TokenType.DECIMAL_NUMBER ||
-                token.Type == TokenType.STRING)
+                token.Type == TokenType.STRING ||
+                token.Type == TokenType.TRUE ||
+                token.Type == TokenType.FALSE)
             {
                 return true;
             }
@@ -791,7 +841,8 @@ namespace InterpreterTest
                 PrintCurrentToken();
                 ExpressionNode right = ParseFactor();
                 PrintCurrentToken();
-                ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
+                //ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
+                ExpressionNode left = new ExpressionLiteral("0", TokenType.NUMBER.ToString());
 
                 return new ExpressionBinary(left, right, opToken.Value);
             }
@@ -1084,6 +1135,11 @@ namespace InterpreterTest
         private ASTNode ParseVariableAssignment(Token variableName, Token literal)
         {
             return new VariableAssignmentNode2(variableName.Value, ParseExpressionLiteral(literal));
+        }
+
+        private ASTNode ParseVariableAssignment(Token varname, ExpressionNode node)
+        {
+            return new VariableAssignmentNode2(varname.Value, node);
         }
 
         private ExpressionNode ParseExpressionLiteral(Token literal)
