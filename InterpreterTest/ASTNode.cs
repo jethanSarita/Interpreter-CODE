@@ -100,6 +100,10 @@ namespace InterpreterTest
         public string eval(SymbolStorage symbolStorage)
         {
             dynamic result = toDisplay?.eval(symbolStorage);
+            if(result is bool)
+            {
+                return Convert.ToString(result).ToUpper();
+            }
             return Convert.ToString(result);
         }
         public ExpressionNode toDisplay = null;
