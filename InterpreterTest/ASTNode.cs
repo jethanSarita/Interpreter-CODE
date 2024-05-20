@@ -273,6 +273,42 @@ namespace InterpreterTest
         }
     }
 
+    //added by ash
+    internal class ExpressionLogical : ExpressionNode
+    {
+        public ExpressionNode _left;
+        public ExpressionNode _right;
+        private string _operator;
+
+        public ExpressionLogical(ExpressionNode left, ExpressionNode right, string op)
+        {
+            _left = left;
+            _right = right;
+            _operator = op;
+            name = "ExpressionLogical";
+        }
+
+        public override dynamic eval(SymbolStorage symbolStorage)
+        {
+            // Evaluate left and right expressions
+            dynamic leftResult = _left.eval(symbolStorage);
+            dynamic rightResult = _right.eval(symbolStorage);
+
+            // Perform logical operation based on the operator
+            switch (_operator)
+            {
+                case "AND":
+                    return leftResult && rightResult;
+                case "OR":
+                    return leftResult || rightResult;
+                case "NOT":
+                    return !leftResult;
+                default:
+                    throw new InvalidOperationException($"Invalid logical operator: {_operator}");
+            }
+        }
+    }
+
     /*internal class DisplayStatementsNode : DisplayNode
     {
         public readonly List<DisplayNode> _displayNodes;

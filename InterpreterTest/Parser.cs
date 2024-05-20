@@ -738,9 +738,7 @@ namespace InterpreterTest
         // breaking down the expression into smaller parts for parsing
         private ExpressionNode ParseExpression()
         {
-            ExpressionNode expression = ParseLogical();
-
-            return expression;
+            return ParseLogical();
         }
 
         private ExpressionNode ParseLogical()
@@ -753,8 +751,10 @@ namespace InterpreterTest
             while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR" || Peek(1).Value == "NOT"))
             {
                 Token opToken = GetNextToken();
+                string op = opToken.Value;
                 ExpressionNode right = ParseComparison();
-                left = new ExpressionConcat(left, right);
+                //left = new ExpressionConcat(left, right);
+                left = new ExpressionLogical(left, right, op);
             }
 
             return left;
