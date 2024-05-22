@@ -851,14 +851,32 @@ namespace InterpreterTest
             {
                 Token opToken = GetNextToken();
                 PrintCurrentToken();
-                ExpressionNode right = ParseFactor();
+                ExpressionNode right = ParseExponent();
                 PrintCurrentToken();
                 //ExpressionNode left = new ExpressionLiteral("0", "NUMBER");
                 ExpressionNode left = new ExpressionLiteral("0", TokenType.NUMBER.ToString());
 
                 return new ExpressionBinary(left, right, opToken.Value);
             }
-            return ParseFactor();
+            return ParseExponent();
+        }
+
+        private ExpressionNode ParseExponent()
+        {
+
+            // parse first factor
+            ExpressionNode left = ParseFactor();
+
+            // continue parsing other factors and create nodes
+            // *, /, and % as parents and other factors as children
+            while (Peek(1) != null && (Peek(1).Value == "^"))
+            {
+                Token opToken = GetNextToken();
+                ExpressionNode right = ParseFactor();
+                left = new ExpressionBinary(left, right, opToken.Value);
+            }
+
+            return left;
         }
 
         // parse factors into nodes for evaluation

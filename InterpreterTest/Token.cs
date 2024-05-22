@@ -22,6 +22,7 @@ namespace InterpreterTest
             SLASH,          // /
             STAR,           // *
             MODULO,         // %
+            EXPONENT,       // ^
 
             //Commenting
             COMMENT,        // #

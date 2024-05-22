@@ -157,6 +157,10 @@ namespace InterpreterTest
                     result = _left.eval(symbolStorage) / _right.eval(symbolStorage);
                     Console.WriteLine(_left.eval(symbolStorage) + "/" + _right.eval(symbolStorage) + "=" + result);
                     break;
+                case "^":
+                    result = (int)Math.Pow((double)_left.eval(symbolStorage), (double)_right.eval(symbolStorage));
+                    Console.WriteLine(_left.eval(symbolStorage) + " ^ " + _right.eval(symbolStorage) + "=" + Math.Pow((double)_left.eval(symbolStorage), (double)_right.eval(symbolStorage)));
+                    break;
                 case "*":
                     //Multiplication
                     result = _left.eval(symbolStorage) * _right.eval(symbolStorage);

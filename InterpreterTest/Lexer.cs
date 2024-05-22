@@ -151,6 +151,9 @@ namespace InterpreterTest
                         case '%':
                             tokens.Add(new Token(Token.TokenType.MODULO, data));
                             break;
+                        case '^':
+                            tokens.Add(new Token(Token.TokenType.EXPONENT, data));
+                            break;
                         case '=':
                             if (Peek() == '=')
                             {
@@ -303,7 +306,7 @@ namespace InterpreterTest
 
         private bool IsBinaryOperator(char c)
         {
-            string operators = "+-/*%=";
+            string operators = "+-/*%=^";
             return operators.Contains(c);
         }
 
