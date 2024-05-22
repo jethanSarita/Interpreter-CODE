@@ -26,8 +26,7 @@ namespace InterpreterTest
 
         public string Evaluate()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             result = "";
 
@@ -62,13 +61,16 @@ namespace InterpreterTest
                 _position++;
             }
 
-            sw.Stop();
+            long endTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long runtime = endTime - startTime;
+            string approx = runtime == 0 ? "~" : string.Empty;
 
             if (result == "")
             {
-                return $"Program ran for {sw.ElapsedMilliseconds} ms\nNo Error.";
+                return $"Program ran for {approx}{runtime} ms\nNo Error";
             }
-            return result;
+
+            return $"Program ran for {approx}{runtime} ms\n{result}";
         }
 
         // Helper method to handle variable declaration
