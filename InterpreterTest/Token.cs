@@ -75,6 +75,7 @@ namespace InterpreterTest
             NOT,            // "NOT"
             AND,            // "AND"
             OR,             // "OR"
+            XOR,            // "XOR"
 
             //Print
             DISPLAY,        // "DISPLAY"

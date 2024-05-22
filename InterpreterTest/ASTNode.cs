@@ -202,12 +202,16 @@ namespace InterpreterTest
                     result = !_right.eval(symbolStorage);
                     break;
                 case "AND":
-                    //NOT logical
+                    //AND logical
                     result = _left.eval(symbolStorage) && _right.eval(symbolStorage);
                     break;
                 case "OR":
-                    //NOT logical
+                    //OR logical
                     result = _left.eval(symbolStorage) || _right.eval(symbolStorage);
+                    break;
+                case "XOR":
+                    //XOR logical
+                    result = _left.eval(symbolStorage) ^ _right.eval(symbolStorage);
                     break;
             }
             return result;

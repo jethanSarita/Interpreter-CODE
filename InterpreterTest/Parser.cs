@@ -761,7 +761,7 @@ namespace InterpreterTest
 
             // continue parsing other factors and create nodes
             // & parents and other factors as children
-            while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR"))
+            while (Peek(1) != null && (Peek(1).Value == "AND" || Peek(1).Value == "OR" || Peek(1).Value == "XOR"))
             {
                 Token opToken = GetNextToken();
                 ExpressionNode right = ParseComparison();

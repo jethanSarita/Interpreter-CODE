@@ -140,6 +140,7 @@ namespace InterpreterTest
             }
         }
 
+        // Helper method for evaluating conditionals
         private void EvaluateConditional(ConditionalNode conditional)
         {
             bool conditionResult = conditional.isAlwaysTrue || conditional.Condition.eval(_symbolStorage);
@@ -154,6 +155,7 @@ namespace InterpreterTest
             }
         }
 
+        // Helper method for evaluating conditional statements
         private void EvaluateConditionalStatements(List<ASTNode> statements)
         {
             foreach (ASTNode statement in statements)
