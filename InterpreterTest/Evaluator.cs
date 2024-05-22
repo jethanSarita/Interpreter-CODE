@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Diagnostics;
 
 namespace InterpreterTest
 {
@@ -25,7 +26,11 @@ namespace InterpreterTest
 
         public string Evaluate()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             result = "";
+
             while (_position < _ast.Count)
             {
                 ASTNode currNode = _ast[_position];
@@ -55,6 +60,13 @@ namespace InterpreterTest
                 }
 
                 _position++;
+            }
+
+            sw.Stop();
+
+            if (result == "")
+            {
+                return $"Program ran for {sw.ElapsedMilliseconds} ms\nNo Error.";
             }
             return result;
         }

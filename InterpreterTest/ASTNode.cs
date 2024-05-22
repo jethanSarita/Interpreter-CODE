@@ -100,10 +100,15 @@ namespace InterpreterTest
         public string eval(SymbolStorage symbolStorage)
         {
             dynamic result = toDisplay?.eval(symbolStorage);
-            if(result is bool)
+            string result_s = Convert.ToString(result);
+
+            if (string.Equals(result_s, "True") || string.Equals(result_s, "False"))
             {
-                return Convert.ToString(result).ToUpper();
+                result_s = result_s.ToUpper();
             }
+
+            return result_s;
+
             return Convert.ToString(result);
         }
         public ExpressionNode toDisplay = null;
@@ -192,6 +197,18 @@ namespace InterpreterTest
                     result = _left.eval(symbolStorage) != _right.eval(symbolStorage);
                     Console.WriteLine(_left.eval(symbolStorage) + "<>" + _right.eval(symbolStorage) + "=" + result);
                     break;
+                case "NOT":
+                    //NOT logical
+                    result = !_right.eval(symbolStorage);
+                    break;
+                case "AND":
+                    //NOT logical
+                    result = _left.eval(symbolStorage) && _right.eval(symbolStorage);
+                    break;
+                case "OR":
+                    //NOT logical
+                    result = _left.eval(symbolStorage) || _right.eval(symbolStorage);
+                    break;
             }
             return result;
         }
@@ -229,6 +246,20 @@ namespace InterpreterTest
         {
             dynamic left_result = _left.eval(symbolStorage);
             dynamic right_result = _right.eval(symbolStorage);
+
+            string left_result_s = Convert.ToString(left_result);
+            string right_result_s = Convert.ToString(right_result);
+
+            if (string.Equals(left_result_s, "True") || string.Equals(left_result_s, "False"))
+            {
+                left_result_s = left_result_s.ToUpper();
+            }
+            if (string.Equals(right_result_s, "True") || string.Equals(right_result_s, "False"))
+            {
+                right_result_s = right_result_s.ToUpper();
+            }
+
+            return left_result_s + right_result_s;
 
             return Convert.ToString(left_result) + Convert.ToString(right_result);
         }
@@ -274,42 +305,6 @@ namespace InterpreterTest
                     break;
             }
             return result;
-        }
-    }
-
-    //added by ash
-    internal class ExpressionLogical : ExpressionNode
-    {
-        public ExpressionNode _left;
-        public ExpressionNode _right;
-        private string _operator;
-
-        public ExpressionLogical(ExpressionNode left, ExpressionNode right, string op)
-        {
-            _left = left;
-            _right = right;
-            _operator = op;
-            name = "ExpressionLogical";
-        }
-
-        public override dynamic eval(SymbolStorage symbolStorage)
-        {
-            // Evaluate left and right expressions
-            dynamic leftResult = _left.eval(symbolStorage);
-            dynamic rightResult = _right.eval(symbolStorage);
-
-            // Perform logical operation based on the operator
-            switch (_operator)
-            {
-                case "AND":
-                    return leftResult && rightResult;
-                case "OR":
-                    return leftResult || rightResult;
-                case "NOT":
-                    return !leftResult;
-                default:
-                    throw new InvalidOperationException($"Invalid logical operator: {_operator}");
-            }
         }
     }
 
