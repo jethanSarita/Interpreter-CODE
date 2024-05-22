@@ -58,7 +58,7 @@
             this.lblOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOutput.Location = new System.Drawing.Point(987, 20);
             this.lblOutput.Name = "lblOutput";
-            this.lblOutput.Size = new System.Drawing.Size(207, 39);
+            this.lblOutput.Size = new System.Drawing.Size(243, 46);
             this.lblOutput.TabIndex = 2;
             this.lblOutput.Text = "Lexer Tester";
             this.lblOutput.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -70,7 +70,7 @@
             this.lblOutput2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOutput2.Location = new System.Drawing.Point(987, 88);
             this.lblOutput2.Name = "lblOutput2";
-            this.lblOutput2.Size = new System.Drawing.Size(222, 39);
+            this.lblOutput2.Size = new System.Drawing.Size(270, 47);
             this.lblOutput2.TabIndex = 3;
             this.lblOutput2.Text = "Parser Tester";
             this.lblOutput2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -131,7 +131,7 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 27F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 661);
             this.Controls.Add(this.secretButton);
@@ -146,7 +146,7 @@
             this.ForeColor = System.Drawing.Color.Black;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Interpreter CODE Code Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
