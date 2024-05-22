@@ -157,6 +157,10 @@ namespace InterpreterTest
                     result = _left.eval(symbolStorage) / _right.eval(symbolStorage);
                     Console.WriteLine(_left.eval(symbolStorage) + "/" + _right.eval(symbolStorage) + "=" + result);
                     break;
+                case "^":
+                    result = (int)Math.Pow((double)_left.eval(symbolStorage), (double)_right.eval(symbolStorage));
+                    Console.WriteLine(_left.eval(symbolStorage) + " ^ " + _right.eval(symbolStorage) + "=" + Math.Pow((double)_left.eval(symbolStorage), (double)_right.eval(symbolStorage)));
+                    break;
                 case "*":
                     //Multiplication
                     result = _left.eval(symbolStorage) * _right.eval(symbolStorage);
@@ -202,12 +206,16 @@ namespace InterpreterTest
                     result = !_right.eval(symbolStorage);
                     break;
                 case "AND":
-                    //NOT logical
+                    //AND logical
                     result = _left.eval(symbolStorage) && _right.eval(symbolStorage);
                     break;
                 case "OR":
-                    //NOT logical
+                    //OR logical
                     result = _left.eval(symbolStorage) || _right.eval(symbolStorage);
+                    break;
+                case "XOR":
+                    //XOR logical
+                    result = _left.eval(symbolStorage) ^ _right.eval(symbolStorage);
                     break;
             }
             return result;

@@ -22,6 +22,7 @@ namespace InterpreterTest
             SLASH,          // /
             STAR,           // *
             MODULO,         // %
+            EXPONENT,       // ^
 
             //Commenting
             COMMENT,        // #
@@ -75,6 +76,7 @@ namespace InterpreterTest
             NOT,            // "NOT"
             AND,            // "AND"
             OR,             // "OR"
+            XOR,            // "XOR"
 
             //Print
             DISPLAY,        // "DISPLAY"
