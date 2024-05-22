@@ -13,7 +13,7 @@ namespace InterpreterTest
         private readonly string _source;
         private int _position;
 
-        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE", "SCAN", "ASH", "WHILE", "JOSH" };
+        private static readonly string[] Keywords = { "INT", "CHAR", "FLOAT", "BOOL", "TRUE", "FALSE", "IF", "NOT", "AND", "XOR", "OR", "DISPLAY", "BEGIN", "END", "CODE", "ELSE", "SCAN", "ASH", "WHILE", "JOSH" };
 
         public Lexer(string source)
         {
@@ -76,6 +76,9 @@ namespace InterpreterTest
                                 break;
                             case "OR":
                                 tokens.Add(new Token(Token.TokenType.OR, data));
+                                break;
+                            case "XOR":
+                                tokens.Add(new Token(Token.TokenType.XOR, data));
                                 break;
                             case "DISPLAY":
                                 tokens.Add(new Token(Token.TokenType.DISPLAY, data));
@@ -147,6 +150,9 @@ namespace InterpreterTest
                             break;
                         case '%':
                             tokens.Add(new Token(Token.TokenType.MODULO, data));
+                            break;
+                        case '^':
+                            tokens.Add(new Token(Token.TokenType.EXPONENT, data));
                             break;
                         case '=':
                             if (Peek() == '=')
@@ -300,7 +306,7 @@ namespace InterpreterTest
 
         private bool IsBinaryOperator(char c)
         {
-            string operators = "+-/*%=";
+            string operators = "+-/*%=^";
             return operators.Contains(c);
         }
 
